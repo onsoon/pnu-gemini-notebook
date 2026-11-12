@@ -410,18 +410,13 @@ html.locked #gate{display:flex;min-height:100vh;min-height:100dvh;align-items:ce
     <h4 class="sub">스킬 A · B (하나 고르기)</h4>
     <div class="skill">
   <h4 class="sname">과목 튜터 <code>/과목튜터</code></h4>
-  <div class="file skdl"><pre hidden># 스킬: 과목튜터
+  <div class="file skdl"><pre hidden>---
+name: subject-tutor
+description: &quot;과목튜터: 내가 올린 강의자료만 근거로 개념 설명, 확인 문제, 오답 해설을 해 주는 시험공부 튜터&quot;
+---
 
-&gt; Gemini [맞춤설정] → [스킬] → [만들기] → [직접 만들기]에서 아래 세 칸을 그대로 붙여넣으세요.
-&gt; 새 대화에서 /과목튜터 으로 불러 씁니다.
+# 과목튜터
 
-## 이름
-과목튜터
-
-## 설명
-내가 올린 강의자료만 근거로 개념 설명, 확인 문제, 오답 해설을 해 주는 시험공부 튜터
-
-## 지침
 # 역할
 너는 부산대 학생의 시험공부를 돕는 &#x27;과목 튜터&#x27;야. 내가 대화에 붙여넣거나 올린 강의자료만 근거로 가르친다.
 
@@ -447,11 +442,11 @@ html.locked #gate{display:flex;min-height:100vh;min-height:100dvh;align-items:ce
 # 마무리 (내가 &quot;끝&quot;이라고 하면)
 | 개념 | 이해도(상·중·하) | 다시 볼 부분 | 표와 &quot;다음 공부 때 할 일&quot; 2개.
 
-## 테스트 (새 대화에 입력)
+## 테스트 예시 (새 대화에 입력)
 /과목튜터 시험은 5일 뒤고 오늘은 30분 공부할 수 있어. 아래 강의자료로 시작하자.
 
 [샘플강의자료_행동경제학_3주차.md 내용 붙여넣기]
-</pre><div class="fbtns"><button type="button" class="dlbtn" data-fn="스킬_과목튜터.md">스킬 파일 받기 (.md)</button></div><p class="dlmsg" aria-live="polite"></p></div>
+</pre><div class="fbtns"><button type="button" class="dlbtn" data-fn="SKILL.md">SKILL.md 받기</button></div><p class="dlmsg" aria-live="polite"></p></div>
   <div class="crow"><span class="clab">이름</span><pre>과목튜터</pre><button type="button" class="copy">복사</button></div>
   <div class="crow"><span class="clab">설명</span><pre>내가 올린 강의자료만 근거로 개념 설명, 확인 문제, 오답 해설을 해 주는 시험공부 튜터</pre><button type="button" class="copy">복사</button></div>
   <div class="crow tall"><span class="clab">지침</span><pre># 역할
@@ -484,18 +479,13 @@ html.locked #gate{display:flex;min-height:100vh;min-height:100dvh;align-items:ce
   <div class="result"><h4>결과 확인: 이렇게 나오면 성공</h4><ul><li>첫 답에 자료 제목과 개념 목록(손실 회피, 프레이밍 등)이 먼저 나온다.</li><li>날짜·시간을 이미 말했으니 다시 묻지 않고 30분 학습 순서를 제안한다.</li><li>개념 하나를 정의 → 예시 → 시험 포인트 순서로 설명하고 확인 문제 2개를 낸다.</li><li>&quot;앵커링 효과는?&quot;처럼 자료에 없는 것을 물으면 &quot;자료에 없음&quot;이라고 답한다. 지어내면 지침의 &#x27;지킬 것&#x27;을 더 강하게 고쳐 보세요.</li></ul></div>
 </div><div class="skill">
   <h4 class="sname">자소서 코치 <code>/자소서코치</code></h4>
-  <div class="file skdl"><pre hidden># 스킬: 자소서코치
+  <div class="file skdl"><pre hidden>---
+name: resume-coach
+description: &quot;자소서코치: 채용 공고와 자소서 초안을 받아, 대신 쓰지 않고 근거 있는 피드백과 면접 예상 질문을 주는 코치&quot;
+---
 
-&gt; Gemini [맞춤설정] → [스킬] → [만들기] → [직접 만들기]에서 아래 세 칸을 그대로 붙여넣으세요.
-&gt; 새 대화에서 /자소서코치 으로 불러 씁니다.
+# 자소서코치
 
-## 이름
-자소서코치
-
-## 설명
-채용 공고와 자소서 초안을 받아, 대신 쓰지 않고 근거 있는 피드백과 면접 예상 질문을 주는 코치
-
-## 지침
 # 역할
 너는 대학생 취업 준비를 돕는 &#x27;자소서 코치&#x27;야. 목표는 내가 내 경험으로 더 좋은 글을 쓰게 돕는 것이지, 대신 써 주는 것이 아니야.
 
@@ -517,11 +507,11 @@ html.locked #gate{display:flex;min-height:100vh;min-height:100dvh;align-items:ce
 - 정중하지만 솔직하게. 칭찬만 하지 마.
 - 한국어로 답해.
 
-## 테스트 (새 대화에 입력)
+## 테스트 예시 (새 대화에 입력)
 /자소서코치 아래 채용 공고, 문항 1, 내 초안이야. 피드백해줘.
 
 [자소서_초안_채용공고_가상.md 내용 붙여넣기]
-</pre><div class="fbtns"><button type="button" class="dlbtn" data-fn="스킬_자소서코치.md">스킬 파일 받기 (.md)</button></div><p class="dlmsg" aria-live="polite"></p></div>
+</pre><div class="fbtns"><button type="button" class="dlbtn" data-fn="SKILL.md">SKILL.md 받기</button></div><p class="dlmsg" aria-live="polite"></p></div>
   <div class="crow"><span class="clab">이름</span><pre>자소서코치</pre><button type="button" class="copy">복사</button></div>
   <div class="crow"><span class="clab">설명</span><pre>채용 공고와 자소서 초안을 받아, 대신 쓰지 않고 근거 있는 피드백과 면접 예상 질문을 주는 코치</pre><button type="button" class="copy">복사</button></div>
   <div class="crow tall"><span class="clab">지침</span><pre># 역할
@@ -561,18 +551,13 @@ html.locked #gate{display:flex;min-height:100vh;min-height:100dvh;align-items:ce
 
 # 지킬 것
 - 메모에 없는 결정이나 담당자를 지어내지 마.
-- 실명이 있으면 공지문에서는 이름 대신 역할(발표 담당 등)로 바꿔 쓸지 먼저 물어봐.</pre><button type="button" class="copy">복사</button><div class="file skdl"><pre hidden># 스킬: 팀플매니저
+- 실명이 있으면 공지문에서는 이름 대신 역할(발표 담당 등)로 바꿔 쓸지 먼저 물어봐.</pre><button type="button" class="copy">복사</button><div class="file skdl"><pre hidden>---
+name: team-project-manager
+description: &quot;팀플매니저: 회의 메모와 단톡을 결정사항·할 일·공지로 정리&quot;
+---
 
-&gt; Gemini [맞춤설정] → [스킬] → [만들기] → [직접 만들기]에서 아래 세 칸을 그대로 붙여넣으세요.
-&gt; 새 대화에서 /팀플매니저 으로 불러 씁니다.
+# 팀플매니저
 
-## 이름
-팀플매니저
-
-## 설명
-회의 메모와 단톡을 결정사항·할 일·공지로 정리
-
-## 지침
 # 역할
 너는 대학 팀 프로젝트의 &#x27;팀플 매니저&#x27;야.
 
@@ -585,7 +570,7 @@ html.locked #gate{display:flex;min-height:100vh;min-height:100dvh;align-items:ce
 # 지킬 것
 - 메모에 없는 결정이나 담당자를 지어내지 마.
 - 실명이 있으면 공지문에서는 이름 대신 역할(발표 담당 등)로 바꿔 쓸지 먼저 물어봐.
-</pre><div class="fbtns"><button type="button" class="dlbtn" data-fn="스킬_팀플매니저.md">스킬 파일 받기 (.md)</button></div><p class="dlmsg" aria-live="polite"></p></div></article><article class="pc"><header><h4>표+3줄 요약 /표요약</h4><span class="when">이름 표요약 · 설명: 어떤 답이든 3줄 요약 + 표 + 다음 할 일 형식으로 정리 (다른 스킬과 겹쳐 쓰기)</span></header><pre># 형식 규칙
+</pre><div class="fbtns"><button type="button" class="dlbtn" data-fn="SKILL.md">SKILL.md 받기</button></div><p class="dlmsg" aria-live="polite"></p></div></article><article class="pc"><header><h4>표+3줄 요약 /표요약</h4><span class="when">이름 표요약 · 설명: 어떤 답이든 3줄 요약 + 표 + 다음 할 일 형식으로 정리 (다른 스킬과 겹쳐 쓰기)</span></header><pre># 형식 규칙
 모든 답을 이 순서로 써.
 1. 맨 위: 핵심 3줄 요약 (한 줄에 한 문장)
 2. 본문: 비교·목록은 표로, 설명은 짧은 문단으로
@@ -593,18 +578,13 @@ html.locked #gate{display:flex;min-height:100vh;min-height:100dvh;align-items:ce
 
 # 지킬 것
 - 전문용어에는 괄호로 쉬운 말을 붙여.
-- 한국어로 답해.</pre><button type="button" class="copy">복사</button><div class="file skdl"><pre hidden># 스킬: 표요약
+- 한국어로 답해.</pre><button type="button" class="copy">복사</button><div class="file skdl"><pre hidden>---
+name: table-summary
+description: &quot;표요약: 어떤 답이든 3줄 요약 + 표 + 다음 할 일 형식으로 정리 (다른 스킬과 겹쳐 쓰기)&quot;
+---
 
-&gt; Gemini [맞춤설정] → [스킬] → [만들기] → [직접 만들기]에서 아래 세 칸을 그대로 붙여넣으세요.
-&gt; 새 대화에서 /표요약 으로 불러 씁니다.
+# 표요약
 
-## 이름
-표요약
-
-## 설명
-어떤 답이든 3줄 요약 + 표 + 다음 할 일 형식으로 정리 (다른 스킬과 겹쳐 쓰기)
-
-## 지침
 # 형식 규칙
 모든 답을 이 순서로 써.
 1. 맨 위: 핵심 3줄 요약 (한 줄에 한 문장)
@@ -614,12 +594,12 @@ html.locked #gate{display:flex;min-height:100vh;min-height:100dvh;align-items:ce
 # 지킬 것
 - 전문용어에는 괄호로 쉬운 말을 붙여.
 - 한국어로 답해.
-</pre><div class="fbtns"><button type="button" class="dlbtn" data-fn="스킬_표요약.md">스킬 파일 받기 (.md)</button></div><p class="dlmsg" aria-live="polite"></p></div></article><article class="pc"><header><h4>겹쳐 쓰기 테스트</h4><span class="when">새 대화에서 입력</span></header><pre>/과목튜터 /표요약 아래 강의자료로 손실 회피를 공부하고 싶어. 시험은 5일 뒤야.
+</pre><div class="fbtns"><button type="button" class="dlbtn" data-fn="SKILL.md">SKILL.md 받기</button></div><p class="dlmsg" aria-live="polite"></p></div></article><article class="pc"><header><h4>겹쳐 쓰기 테스트</h4><span class="when">새 대화에서 입력</span></header><pre>/과목튜터 /표요약 아래 강의자료로 손실 회피를 공부하고 싶어. 시험은 5일 뒤야.
 
 [샘플강의자료_행동경제학_3주차.md 내용 붙여넣기]</pre><button type="button" class="copy">복사</button></article></div>
-    <div class="file pack skillpack" id="skilldl"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>스킬 4개 한 번에 받기</b><span>스킬_4종.zip · /과목튜터, /자소서코치, /팀플매니저, /표요약 · 파일을 열어 이름·설명·지침을 복사해 붙여넣으세요</span></div></div>
+    <div class="file pack skillpack" id="skilldl"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>스킬 4개 한 번에 받기</b><span>스킬_4종.zip · /과목튜터, /자소서코치, /팀플매니저, /표요약 · 압축을 풀면 스킬마다 폴더 안에 SKILL.md가 있습니다</span></div></div>
   <div class="fbtns"><button type="button" class="zipbtn" data-pack="skills" data-fn="스킬_4종.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
-  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/skills/s1.md" target="_blank" rel="noopener">01_과목튜터.md</a></li><li><a href="files/skills/s2.md" target="_blank" rel="noopener">02_자소서코치.md</a></li><li><a href="files/skills/s3.md" target="_blank" rel="noopener">03_팀플매니저.md</a></li><li><a href="files/skills/s4.md" target="_blank" rel="noopener">04_표요약.md</a></li></ul></details></div>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/skills/s1.md" target="_blank" rel="noopener">과목튜터 · SKILL.md</a></li><li><a href="files/skills/s2.md" target="_blank" rel="noopener">자소서코치 · SKILL.md</a></li><li><a href="files/skills/s3.md" target="_blank" rel="noopener">팀플매니저 · SKILL.md</a></li><li><a href="files/skills/s4.md" target="_blank" rel="noopener">표요약 · SKILL.md</a></li></ul></details></div>
   </article>
 
   <article class="prac" id="g4">
@@ -1127,7 +1107,7 @@ html.locked #gate{display:flex;min-height:100vh;min-height:100dvh;align-items:ce
   <h4 class="sub">실습·부록별 묶음</h4>
   <div class="zgrid"><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>Part 1 스킬 · 스킬 파일 4개 (과목튜터·자소서코치·팀플매니저·표요약)</b><span>스킬_4종.zip · 파일 4개</span></div></div>
   <div class="fbtns"><button type="button" class="zipbtn" data-pack="skills" data-fn="스킬_4종.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
-  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/skills/s1.md" target="_blank" rel="noopener">01_과목튜터.md</a></li><li><a href="files/skills/s2.md" target="_blank" rel="noopener">02_자소서코치.md</a></li><li><a href="files/skills/s3.md" target="_blank" rel="noopener">03_팀플매니저.md</a></li><li><a href="files/skills/s4.md" target="_blank" rel="noopener">04_표요약.md</a></li></ul></details></div><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>실습 1 · 과목별 노트북 자료 10개</b><span>실습1_과목별노트북.zip · 파일 10개</span></div></div>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/skills/s1.md" target="_blank" rel="noopener">SKILL.md</a></li><li><a href="files/skills/s2.md" target="_blank" rel="noopener">SKILL.md</a></li><li><a href="files/skills/s3.md" target="_blank" rel="noopener">SKILL.md</a></li><li><a href="files/skills/s4.md" target="_blank" rel="noopener">SKILL.md</a></li></ul></details></div><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>실습 1 · 과목별 노트북 자료 10개</b><span>실습1_과목별노트북.zip · 파일 10개</span></div></div>
   <div class="fbtns"><button type="button" class="zipbtn" data-pack="p1" data-fn="실습1_과목별노트북.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
   <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/raw/f001.md" target="_blank" rel="noopener">01_경영학원론_강의계획서_2026-1.md</a></li><li><a href="files/raw/f002.md" target="_blank" rel="noopener">02_경영학원론_중간고사_기출_2025.md</a></li><li><a href="files/raw/f003.md" target="_blank" rel="noopener">03_경영학원론_강의슬라이드_핵심요약.md</a></li><li><a href="files/raw/f004.md" target="_blank" rel="noopener">04_공학수학1_강의계획서_2026-1.md</a></li><li><a href="files/raw/f005.md" target="_blank" rel="noopener">05_공학수학1_과제1_안내문.md</a></li><li><a href="files/raw/f006.md" target="_blank" rel="noopener">06_공학수학1_중간고사_기출_2024.md</a></li><li><a href="files/raw/f007.md" target="_blank" rel="noopener">07_대학영어_교양필수_강의계획서_2026-1.md</a></li><li><a href="files/raw/f008.md" target="_blank" rel="noopener">08_대학영어_발표_과제공지.md</a></li><li><a href="files/raw/f009.md" target="_blank" rel="noopener">09_대학글쓰기_기말과제_안내.md</a></li><li><a href="files/raw/f010.md" target="_blank" rel="noopener">10_기출족보_시험정보_모음.md</a></li></ul></details></div><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>실습 2 · 샘플 강의자료</b><span>실습2_강의자료_논문읽기.zip · 파일 1개</span></div></div>
   <div class="fbtns"><button type="button" class="zipbtn" data-pack="p2" data-fn="실습2_강의자료_논문읽기.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
@@ -1562,7 +1542,7 @@ html.locked #gate{display:flex;min-height:100vh;min-height:100dvh;align-items:ce
     Promise.resolve(dlp).then(function(dl){
       if(!dl){setMsg(b,'이 화면에서는 내려받기가 안 됩니다. [내용 복사]를 쓰세요.');return}
       if(/\.csv$/i.test(fn))data='\ufeff'+data;
-      return dl.save({filename:fn,data:data}).then(function(){setMsg(b,/^스킬/.test(fn)?'내려받았습니다. 파일을 열어 이름·설명·지침을 Gemini [맞춤설정] → [스킬]에 붙여넣으세요.':'내려받았습니다. Gemini Notebook에서 [소스 추가] → [파일 업로드]로 올리세요.')},function(err){
+      return dl.save({filename:fn,data:data}).then(function(){setMsg(b,/^스킬|SKILL/.test(fn)?'내려받았습니다. 파일 이름(SKILL.md)을 바꾸지 말고 Gemini [스킬] 업로드에 그대로 올리세요. 이어서 받으면 SKILL (1).md처럼 이름이 바뀌니 하나씩 올린 뒤 받으세요.':'내려받았습니다. Gemini Notebook에서 [소스 추가] → [파일 업로드]로 올리세요.')},function(err){
         var c=err&&err.code;
         if(c==='declined')setMsg(b,'내려받기를 취소했습니다.');
         else if(c==='rate_limited')setMsg(b,'잠시 후 다시 눌러 주세요.');
@@ -1586,7 +1566,7 @@ html.locked #gate{display:flex;min-height:100vh;min-height:100dvh;align-items:ce
     }).then(function(blob){
       return Promise.resolve(dlp).then(function(dl){
         if(!dl){setMsg(b,'이 화면에서는 내려받기가 안 됩니다.');return}
-        return dl.save({filename:fn,data:blob}).then(function(){setMsg(b,/^스킬/.test(fn)?'내려받았습니다. 압축을 풀고 파일마다 이름·설명·지침을 Gemini [맞춤설정] → [스킬]에 붙여넣으세요.':'내려받았습니다. 압축을 풀고 Gemini Notebook에서 [소스 추가] → [파일 업로드]로 올리세요.')},function(err){
+        return dl.save({filename:fn,data:blob}).then(function(){setMsg(b,/^스킬|SKILL/.test(fn)?'내려받았습니다. 압축을 풀고 폴더마다 들어 있는 SKILL.md를 Gemini [스킬] 업로드에 그대로 올리세요.':'내려받았습니다. 압축을 풀고 Gemini Notebook에서 [소스 추가] → [파일 업로드]로 올리세요.')},function(err){
           var c=err&&err.code;
           if(c==='declined')setMsg(b,'내려받기를 취소했습니다.');
           else if(c==='rate_limited')setMsg(b,'잠시 후 다시 눌러 주세요.');
