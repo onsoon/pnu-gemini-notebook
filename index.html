@@ -1,0 +1,1529 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body>
+<title>PNU AI 테크클래스_Gemini Notebook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single working column for a lab session; sticky section nav; prompt cards in a 2-col grid that stacks on phones */
+:root{
+  --bg:#f5f7fb; --surface:#ffffff; --ink:#14213d; --muted:#5a6680; --line:#d9dfeb;
+  --accent:#0b4ea2; --accent-ink:#ffffff; --mark:#ffd34d; --ok:#1f7a4d; --no:#b42318; --q:#8a6d00;
+  --code:#eef2f9;
+  --f-display:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1424; --surface:#161e33; --ink:#e7ecf7; --muted:#9aa6c0; --line:#2a3552;
+  --accent:#5b9bf0; --accent-ink:#0b1222; --mark:#e8b923; --ok:#4cc38a; --no:#ff7b72; --q:#e3c25b; --code:#1c2640; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1424; --surface:#161e33; --ink:#e7ecf7; --muted:#9aa6c0; --line:#2a3552;
+  --accent:#5b9bf0; --accent-ink:#0b1222; --mark:#e8b923; --ok:#4cc38a; --no:#ff7b72; --q:#e3c25b; --code:#1c2640; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:960px;margin:0 auto}
+header.top{padding-block:40px 20px;display:grid;gap:8px}
+.eyebrow{font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+h1{font-family:var(--f-display);font-size:clamp(28px,5vw,40px);line-height:1.2;margin:0;text-wrap:balance}
+h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--mark) 62%);padding-inline:2px}
+.meta{color:var(--muted);margin:0}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.links a{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600}
+.links a.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.links a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);display:flex;gap:4px;overflow-x:auto;padding-block:8px}
+nav.tabs a{white-space:nowrap;padding:6px 12px;border-radius:999px;color:var(--muted);text-decoration:none;font-size:14px}
+nav.tabs a:hover{color:var(--ink);background:var(--surface)}
+section{padding-block:32px 8px;scroll-margin-top:56px}
+h2{font-family:var(--f-display);font-size:22px;margin:0 0 4px}
+h3{font-size:16px;margin:24px 0 10px;color:var(--accent)}
+.lead{color:var(--muted);margin:0 0 16px;max-width:65ch}
+ol.sched{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+ol.sched li{display:grid;grid-template-columns:56px 48px 96px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);align-items:baseline}
+ol.sched .t{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:500}
+ol.sched .m{font-family:var(--f-mono);color:var(--muted);font-size:13px}
+ol.sched .n{font-weight:600}
+ol.sched .d{color:var(--muted);min-width:0}
+@media (max-width:560px){ol.sched li{grid-template-columns:52px 1fr}ol.sched .m{display:none}ol.sched .d{grid-column:2}}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:20px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.fact b{display:block;font-size:13px;color:var(--muted);font-weight:600;margin-bottom:2px}
+.fact.warn{border-color:var(--mark)}
+ul.checks{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+li.ck{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line)}
+li.ck:last-child{border-bottom:0}
+.lab{min-width:0;flex:1 1 220px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:inherit;font-size:13px;padding:5px 12px;background:transparent;color:var(--muted);border:0;border-right:1px solid var(--line);cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"][data-v="y"]{background:var(--ok);color:var(--surface)}
+.seg button[aria-pressed="true"][data-v="n"]{background:var(--no);color:var(--surface)}
+.seg button[aria-pressed="true"][data-v="q"]{background:var(--q);color:var(--surface)}
+.tally{display:flex;flex-wrap:wrap;gap:16px;margin:12px 0 0;color:var(--muted);font-variant-numeric:tabular-nums}
+.tally b{color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:12px}
+.pc{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.pc header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline}
+.pc h4{margin:0;font-size:15px}
+.when{font-size:12px;color:var(--muted)}
+pre{margin:0;background:var(--code);border-radius:8px;padding:12px;font-family:var(--f-mono);font-size:13px;line-height:1.6;white-space:pre-wrap;word-break:break-word;overflow-x:auto;color:var(--ink)}
+.pc pre{flex:1}
+button.copy{align-self:flex-start;font:inherit;font-size:13px;font-weight:600;padding:6px 14px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer}
+button.copy.done{background:var(--accent);color:var(--accent-ink)}
+details.ds{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:10px}
+details.ds summary{cursor:pointer;padding:12px 16px;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.dt{font-weight:600}.du{font-size:13px;color:var(--muted)}
+details.ds pre{margin:0 16px 10px;max-height:360px;overflow:auto}
+details.ds button.copy{margin:0 16px 14px}
+.note{border-left:3px solid var(--mark);padding:8px 14px;background:var(--surface);border-radius:0 8px 8px 0;color:var(--ink);max-width:70ch}
+.lab{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:14px}
+ol.steps{margin:0;padding-left:1.4em;display:grid;gap:8px}
+ol.steps b{display:inline-block;min-width:4.5em;margin-right:6px;color:var(--accent)}
+a.labbtn{justify-self:start;padding:10px 16px;border-radius:8px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600}
+a.labbtn:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+.tools100{display:grid;gap:10px;margin-bottom:12px}
+#q100{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);width:100%;max-width:420px}
+#q100:focus-visible{outline:3px solid var(--mark);outline-offset:1px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+.count100{margin:0;color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.list100{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:8px;align-items:start}
+details.cp{background:var(--surface);border:1px solid var(--line);border-radius:10px;min-width:0}
+details.cp summary{cursor:pointer;padding:10px 14px;display:flex;gap:10px;align-items:baseline}
+details.cp .no{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+details.cp .ct{font-weight:600;flex:1;min-width:0}
+details.cp .cc{font-size:12px;color:var(--muted);white-space:nowrap}
+details.cp pre{margin:0 14px 10px}
+details.cp button.copy{margin:0 14px 12px}
+.tw{overflow-x:auto;margin-bottom:8px}
+table.gt{border-collapse:collapse;width:100%;min-width:520px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:14px}
+table.gt th,table.gt td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+table.gt th{font-size:13px;color:var(--muted);font-weight:600}
+table.gt td:first-child{font-weight:600;white-space:nowrap}
+code{font-family:var(--f-mono);font-size:13px;background:var(--code);padding:1px 5px;border-radius:4px}
+#sources ol.steps{margin-bottom:8px}
+footer{margin-top:40px;color:var(--muted);font-size:13px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.eyebrow{margin:0}
+#part1,#part2{padding-block:40px 8px}
+#part1>h2,#part2>h2{font-size:28px;margin-bottom:12px}
+article.prac{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:16px;display:grid;gap:12px;min-width:0;scroll-margin-top:56px}
+.ph{display:flex;gap:14px;align-items:flex-start}
+.pno{flex:none;font-family:var(--f-mono);font-size:13px;font-weight:500;background:var(--accent);color:var(--accent-ink);border-radius:6px;padding:3px 8px;margin-top:3px}
+.prac h3{margin:0;color:var(--ink);font-size:19px;text-wrap:balance}
+.ptime{margin:2px 0 0;color:var(--muted);font-size:13px}
+.goal{margin:0;max-width:70ch}
+.goal b{display:inline-block;font-size:12px;letter-spacing:.06em;color:var(--accent);margin-right:6px}
+h4.sub{margin:8px 0 0;font-size:14px;color:var(--muted);letter-spacing:.02em}
+.hint{margin:0;color:var(--muted);font-size:14px;max-width:70ch}
+ol.flow{margin:0;padding-left:1.4em;display:grid;gap:6px;max-width:75ch}
+.topics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.topic{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:2px;background:var(--bg)}
+.topic .tag{font-size:12px;color:var(--accent);font-weight:600}
+.topic span:last-child{font-size:13px;color:var(--muted)}
+.file{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:10px;background:var(--bg)}
+.fhead{display:flex;gap:12px;align-items:center;min-width:0}
+.ficon{flex:none;font-family:var(--f-mono);font-size:11px;font-weight:500;width:40px;height:44px;border:1.5px solid var(--accent);color:var(--accent);border-radius:4px 10px 4px 4px;display:grid;place-items:center}
+.fmeta{display:grid;min-width:0}
+.fmeta span{font-size:13px;color:var(--muted);word-break:break-all}
+.fbtns{display:flex;flex-wrap:wrap;gap:8px}
+button.dlbtn{font:inherit;font-size:13px;font-weight:600;padding:6px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+button.dlbtn:focus-visible,button.copy:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+.file details summary{cursor:pointer;font-size:13px;color:var(--muted)}
+.file details pre{margin-top:8px;max-height:320px;overflow:auto}
+.fbtns button.copy{align-self:auto}
+.dlmsg{margin:0;font-size:13px;color:var(--muted)}
+.dlmsg:empty{display:none}
+.prac .grid{margin-top:0}
+.prac .pc{background:var(--bg)}
+ol.goals{margin:0;padding-left:1.5em;display:grid;gap:10px;max-width:75ch}
+ol.goals li::marker{color:var(--accent);font-weight:700}
+ol.goals b{display:block}
+ol.goals span{color:var(--muted)}
+.h2b{margin-top:28px}
+.result{border:1px solid var(--accent);border-left-width:4px;border-radius:10px;padding:12px 14px;background:var(--bg)}
+.result h4{margin:0 0 6px;font-size:14px;color:var(--accent)}
+.result ul{margin:0;padding-left:1.2em;display:grid;gap:4px;font-size:14px}
+.skill{border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px;background:var(--bg)}
+.sname{margin:0;font-size:16px}
+.crow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:8px;align-items:start}
+.clab{font-size:12px;font-weight:600;color:var(--muted);padding-top:8px}
+.crow pre{margin:0;max-height:none}
+.crow.tall pre{max-height:360px;overflow:auto}
+.crow button.copy{align-self:start}
+@media (max-width:560px){.crow{grid-template-columns:minmax(0,1fr)}.clab{padding-top:0}}
+.outcome{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;border:1px solid var(--accent);border-radius:10px;padding:10px 14px;background:var(--bg)}
+.outcome .olab{font-size:12px;font-weight:600;color:var(--accent-ink);background:var(--accent);border-radius:5px;padding:2px 8px}
+.outcome b{font-size:17px}
+.outcome span:last-child{color:var(--muted);font-size:14px;flex-basis:100%}
+.crow.set{grid-template-columns:120px minmax(0,1fr) auto}
+.crow.set .clab small{display:block;font-weight:400;margin-top:2px}
+@media (max-width:560px){.crow.set{grid-template-columns:minmax(0,1fr)}}
+button.zipbtn{font:inherit;font-size:13px;font-weight:600;padding:6px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+button.zipbtn:focus-visible,a.lbtn:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+a.lbtn{font-size:13px;font-weight:600;padding:6px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none}
+a.lbtn.ghost{background:transparent;color:var(--accent)}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:10px}
+.thumbs figure{margin:0;display:grid;gap:4px}
+.thumbs img{width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:var(--bg)}
+.thumbs figcaption{font-size:12px;color:var(--muted)}
+details.flist{border:1px dashed var(--line);border-radius:10px;padding:10px 14px;display:grid;gap:10px}
+details.flist summary{cursor:pointer;font-size:14px;font-weight:600}
+details.flist[open]{gap:10px}
+details.flist>*+*{margin-top:10px}
+details.flist ul{margin:0;padding-left:1.2em;font-size:14px;color:var(--muted)}
+.zgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:10px}
+table.ov td:first-child a{font-weight:700;color:var(--accent)}
+p.break{margin:16px 0 0;text-align:center;font-size:13px;color:var(--muted);border-block:1px dashed var(--line);padding:6px}
+a.sidedl{position:fixed;right:16px;bottom:16px;z-index:20;display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:14px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+a.sidedl span{font-size:16px}
+a.sidedl:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+@media (min-width:1100px){a.sidedl{top:50%;bottom:auto;right:0;transform:translateY(-50%);writing-mode:vertical-rl;border-radius:10px 0 0 10px;padding:16px 10px}a.sidedl span{writing-mode:horizontal-tb}}
+#allfiles{padding-block:40px 8px;scroll-margin-top:56px}
+#allfiles>h2{font-size:28px;margin-bottom:12px}
+.allpack{border-color:var(--accent);margin:12px 0}
+button.zipbtn.big{font-size:15px;padding:10px 20px}
+ul.links{margin:0;padding-left:1.2em;display:grid;gap:4px;font-size:13px}
+ul.links a{color:var(--accent);word-break:break-all}
+ul.links em{font-style:normal;color:var(--muted);margin-left:6px;font-size:12px}
+@media print{a.sidedl{display:none}}
+dl.concepts{margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:10px}
+.cpt{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:4px;align-content:start}
+.cpt .tag{font-size:12px;color:var(--accent);font-weight:600}
+.cpt dt{font-weight:700}
+.cpt dd{margin:0;color:var(--muted);font-size:14px}
+
+footer.site{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.6}
+footer.site .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:20px 28px}
+footer.site h4{margin:0 0 8px;font-size:13px;color:var(--ink);letter-spacing:.02em}
+footer.site p{margin:0 0 6px}
+footer.site ul{list-style:none;margin:0;padding:0}
+footer.site li{margin:0 0 4px}
+footer.site a{color:inherit;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+footer.site a:hover{color:var(--accent)}
+footer.site .fsm{font-size:12px}
+footer.site .fnote{margin-top:22px;padding:14px 16px;border-radius:10px;background:var(--surface)}
+footer.site .fnote p{margin:0 0 8px}
+footer.site .fnote p:last-child{margin:0}
+footer.site .fbot{margin-top:16px;font-size:12px}
+@media (max-width:1099px){footer.site{padding-bottom:72px}}
+.file.skdl{border:0;padding:0;margin:0;background:none;box-shadow:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px}.file.skdl .fbtns{margin:0}.file.skdl .dlmsg{margin:0;font-size:12px}a.sidedl.sk{bottom:72px;background:var(--surface);color:var(--accent);border:2px solid var(--accent)}@media (min-width:1100px){a.sidedl{top:38%}a.sidedl.sk{top:68%;bottom:auto}}</style>
+
+<div class="wrap">
+<header class="top" id="top">
+  <span class="eyebrow">PNU AI 테크클래스_Gemini Notebook · 2026.11.13(금) 15:00–17:00 · 과학기술연구동 401호</span>
+  <h1><em>Gemini</em>와 Gemini Notebook 실습실</h1>
+  <p class="meta">수업 순서대로 정리했습니다. 각 실습 안에서 프롬프트를 복사하고 실습 파일을 내려받으세요.</p>
+  <div class="links">
+    <a href="https://gemini.google.com" target="_blank" rel="noopener">Gemini 열기</a>
+    <a href="https://notebook.google.com" target="_blank" rel="noopener">Gemini Notebook 열기</a>
+    <a class="ghost" href="https://notebooklm.google.com" target="_blank" rel="noopener">주소가 안 열리면</a>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="섹션"><a href="#today">학습 목표·개념</a><a href="#part1">Part 1 Gemini</a><a href="#part2">Part 2 Notebook</a><a href="#nb1">1 과목별 노트북</a><a href="#nb2">2 강의자료·논문</a><a href="#nb3">3 복습 퀴즈</a><a href="#nb4">4 장학금 비교표</a><a href="#nb5">5 포스터·슬라이드</a><a href="#allfiles">실습 자료 받기</a><a href="#canvas100">캔버스 100선</a><a href="#rules">지켜야 할 것</a></nav>
+
+<section id="today">
+  <h2>학습 목표</h2>
+  <p class="lead">오늘은 Gemini의 스킬·캔버스·Deep Research를 짧게 실습한 뒤, Gemini Notebook으로 넘어가 실습합니다.</p>
+  <ol class="goals"><li><b>Gemini를 목적에 맞게 쓴다</b><span>4요소(역할·맥락·명령·형식, RCCF) 프롬프트로 원하는 결과를 받고, 결과를 정답이나 출처와 비교해 검증한다.</span></li><li><b>나만의 AI 도구를 만든다</b><span>스킬로 과목 튜터·자소서 코치를 만들어 테스트하고, 캔버스로 학점 계산기·공강 찾기 웹앱을 만들고, Deep Research로 희망 직무·기업을 조사해 출처를 검증한다.</span></li><li><b>AI가 틀리는 이유를 설명한다</b><span>LLM은 학습이 끝나면 지식이 고정되어 모르는 것도 그럴듯하게 답한다(환각). 자료를 넣어 답하게 하는 RAG가 왜 안전한지 말할 수 있다.</span></li><li><b>근거 있는 답을 받는다</b><span>Gemini Notebook에 소스를 찾고 골라 넣고, 인용 번호로 원문을 확인하는 습관을 들인다.</span></li><li><b>결과물로 정리한다</b><span>마인드맵·퀴즈·오디오 개요로 복습 세트를, 데이터 표로 장학금·생활비 비교를, 샘플 이미지로 포스터와 발표 슬라이드를 만든다.</span></li></ol>
+  <h2 class="h2b">꼭 알아야 할 개념 12가지</h2>
+  <p class="lead">실습 중에 모르는 말이 나오면 여기로 돌아오세요.</p>
+  <dl class="concepts"><div class="cpt"><span class="tag">기본</span><dt>LLM (대규모 언어 모델)</dt><dd>엄청난 양의 글을 학습해 다음에 올 말을 예측하는 AI. Gemini가 여기에 해당합니다.</dd></div><div class="cpt"><span class="tag">기본</span><dt>환각</dt><dd>AI가 사실이 아닌 내용을 확신에 차서 말하는 현상. 학습이 끝난 뒤의 일이나 모르는 것을 물을 때 자주 생깁니다.</dd></div><div class="cpt"><span class="tag">기본</span><dt>프롬프트와 RCCF</dt><dd>AI에게 주는 지시문. 역할(Role)·맥락(Context)·명령(Command)·형식(Format)을 넣으면 원하는 답에 가까워집니다.</dd></div><div class="cpt"><span class="tag">기본</span><dt>결과 검증</dt><dd>AI 결과물이 맞는지 직접 확인하는 일. 숫자는 손으로 검산하고, 출처는 눌러 보고, 자료에 없는 질문으로 지어내는지 시험합니다.</dd></div><div class="cpt"><span class="tag">Gemini</span><dt>Deep Research</dt><dd>AI가 연구 계획을 세우고 수십 개 웹페이지를 읽어 출처가 달린 보고서를 쓰는 기능. 몇 분 걸립니다.</dd></div><div class="cpt"><span class="tag">Gemini</span><dt>스킬</dt><dd>자주 쓰는 지시를 저장해 /이름으로 불러 쓰는 기능. 여러 개를 겹쳐 쓸 수 있고, Gems를 대신합니다.</dd></div><div class="cpt"><span class="tag">Gemini</span><dt>캔버스</dt><dd>글이나 코드를 옆 화면에서 함께 만들고 고치는 작업 공간. 말로 설명하면 웹앱이 만들어집니다.</dd></div><div class="cpt"><span class="tag">Notebook</span><dt>RAG (검색 증강 생성)</dt><dd>질문과 관련된 부분을 내 자료에서 먼저 찾아(검색) 답에 붙여(증강) 답을 쓰는(생성) 방식. 오픈북 시험과 같습니다.</dd></div><div class="cpt"><span class="tag">Notebook</span><dt>소스</dt><dd>노트북이 답의 근거로 삼는 자료. PDF, 웹페이지, 유튜브, Drive 문서 등을 넣을 수 있고, 체크한 소스만 씁니다.</dd></div><div class="cpt"><span class="tag">Notebook</span><dt>인용</dt><dd>답 옆의 번호. 누르면 근거가 된 원문 위치로 이동합니다. 중요한 숫자와 날짜는 꼭 눌러 확인합니다.</dd></div><div class="cpt"><span class="tag">Notebook</span><dt>Fast·Deep Research (소스 찾기)</dt><dd>노트북 안에서 웹이나 Drive를 검색해 소스를 찾아 넣는 기능. Fast는 빠른 목록, Deep은 보고서까지 줍니다.</dd></div><div class="cpt"><span class="tag">Notebook</span><dt>스튜디오</dt><dd>소스로 오디오 개요, 슬라이드, 퀴즈, 플래시카드, 마인드맵, 보고서 같은 결과물을 만드는 패널.</dd></div></dl>
+</section>
+
+<section id="part1">
+  <p class="eyebrow">Part 1</p>
+  <h2>Gemini 핵심 실습</h2>
+  <p class="lead">Deep Research를 먼저 돌려 두고, 기다리는 동안 스킬과 캔버스를 만든 뒤, 마지막에 보고서를 검증합니다.</p>
+
+  <article class="prac" id="g2">
+    <header class="ph"><span class="pno">1-1</span><div><h3>Deep Research 시작해 두기</h3><p class="ptime">결과 확인은 1-4에서</p></div></header>
+    <p class="goal"><b>목표</b> 희망 직무·기업 조사(주제 A 추천)를 시작해 둡니다. 몇 분 걸리니 시작만 하고 스킬 실습으로 넘어갑니다. 이 보고서는 내 진로 노트북의 소스로 쓸 수 있습니다.</p>
+    <ol class="flow"><li>입력창의 [도구]에서 <b>Deep Research</b>를 고릅니다.</li><li>주제 A·B·C 중 하나를 골라 [ ] 안을 내 상황으로 바꿔 입력합니다.</li><li>연구 계획이 나오면 바로 시작하지 말고 [계획 수정]에 아래 '계획 수정 문장'을 넣은 뒤 [연구 시작]을 누릅니다.</li><li>창을 닫거나 다른 대화로 가도 조사는 계속됩니다. 1-4에서 돌아옵니다.</li></ol>
+    <div class="grid"><article class="pc"><header><h4>A. 진로: 희망 직무·기업 조사 (추천)</h4><span class="when">도구 &gt; Deep Research · 결과는 1-4에서 검증</span></header><pre>나는 부산대 [학과] [학년]이야. [희망 직무] 신입 채용 동향을 조사해줘. 2025년 이후 자료로, 요구 역량과 자격증, 부산·경남 지역 채용 기업 예시, 대학생이 지금부터 준비할 것을 학년별로 정리해줘. 공식 기관과 기업 채용 공고 자료를 우선하고 출처를 꼭 달아줘.</pre><button type="button" class="copy">복사</button></article><article class="pc"><header><h4>B. 부산 대학생 주거·생활비 지원</h4><span class="when">도구 &gt; Deep Research · 실습 3과 연결</span></header><pre>부산에 사는 대학생이 2026~2027년에 받을 수 있는 주거·생활비 지원 제도를 조사해줘. 국가, 부산시, 대학 제도로 나눠 지원 내용, 금액, 자격, 신청 시기, 신청처를 표로 정리하고, 중복 수혜가 안 되는 조합도 알려줘. 정부·지자체·대학 공식 자료를 우선하고 출처를 꼭 달아줘.</pre><button type="button" class="copy">복사</button></article><article class="pc"><header><h4>C. 과제: 선행연구 정리</h4><span class="when">도구 &gt; Deep Research</span></header><pre>[과제 주제]에 대한 선행연구를 조사해줘. 주요 연구 5~8편의 연구 질문, 방법, 결과를 표로 정리하고, 연구들이 서로 엇갈리는 지점과 아직 연구가 부족한 부분을 알려줘. 학술 논문과 공공기관 보고서를 우선하고, 각 연구의 출처 링크를 달아줘.</pre><button type="button" class="copy">복사</button></article><article class="pc"><header><h4>연구 계획 수정 문장</h4><span class="when">계획이 나오면 [계획 수정]에 입력</span></header><pre>공식 기관 자료를 우선해줘. 2026년 이후 자료만 써줘. 블로그와 광고성 글은 제외해줘. 결과는 대학생이 읽기 쉽게 표 위주로 정리해줘.</pre><button type="button" class="copy">복사</button></article></div>
+    <div class="result"><h4>시작 확인</h4><ul><li>연구 계획에 '공식 기관 자료 우선, 2026년 이후' 같은 내 수정 문장이 반영되어 있다.</li><li>진행 화면에 읽고 있는 사이트 목록이 보인다.</li><li>주의: 스킬은 Deep Research와 같이 쓸 수 없습니다. 스킬 없이 실행하세요.</li></ul></div>
+  </article>
+
+  <article class="prac" id="g3">
+    <header class="ph"><span class="pno">1-2</span><div><h3>스킬: 나만의 AI 조교 만들기</h3></div></header>
+    <p class="goal"><b>목표</b> 자주 쓰는 지시를 스킬로 저장하고 새 대화에서 <code>/스킬이름</code>으로 불러 씁니다. 과목 튜터나 자소서 코치 중 하나를 만들고, 실습 자료로 테스트해 결과를 확인합니다.</p>
+    <ol class="flow"><li>왼쪽 메뉴 [맞춤설정] → [스킬] → [만들기] → [직접 만들기]를 누릅니다.</li><li>아래 스킬 하나의 <b>이름</b>, <b>설명</b>, <b>지침</b>을 각각 복사해 붙여넣고 [만들기]를 누릅니다. 지침 맨 위 '역할'에 내 학과·학년을 한 줄 더하면 더 잘 맞습니다.</li><li>새 대화를 열고 <b>테스트</b> 문장과 실습 자료를 붙여넣어 실행합니다.</li><li>'결과 확인'과 비교해 다르게 나온 부분이 있으면 지침을 고쳐 다시 테스트합니다.</li><li>스킬 메뉴가 안 보이면 같은 지침으로 Gem을 만드세요(Gem 관리자 → 새 Gem).</li></ol>
+    <h4 class="sub">실습 자료</h4>
+    <p class="hint">과목 튜터는 샘플 강의자료, 자소서 코치는 가상 채용 공고와 초안으로 테스트합니다.</p>
+    <div class="file">
+  <div class="fhead"><span class="ficon" aria-hidden="true">MD</span><div class="fmeta"><b>샘플 강의자료: 행동경제학 3주차</b><span>샘플강의자료_행동경제학_3주차.md · 과목 튜터 테스트에 붙여넣기</span></div></div>
+  <div class="fbtns"><button type="button" class="dlbtn" data-fn="샘플강의자료_행동경제학_3주차.md">파일 내려받기</button><button type="button" class="copy">내용 복사</button></div>
+  <details><summary>내용 미리보기</summary><pre># 행동경제학 입문 3주차: 손실 회피, 프레이밍, 현재 편향 (실습용 샘플 강의자료)
+
+※ 실습용으로 정리한 요약 강의 노트입니다. 자기 과목 자료가 없는 학생은 이 자료를 소스로 사용하세요.
+
+## 1. 전통 경제학과 행동경제학
+전통 경제학은 사람이 모든 정보를 고려해 자기 효용을 최대화하는 합리적 선택을 한다고 가정한다. 행동경제학은 실제 사람이 제한된 주의력과 감정, 습관 때문에 이 가정에서 체계적으로 벗어난다는 점에 주목한다. 이런 체계적 이탈을 &#x27;편향(bias)&#x27;이라고 부른다.
+
+## 2. 손실 회피 (Loss Aversion)
+카너먼과 트버스키의 전망 이론(Prospect Theory, 1979)에 따르면 사람은 같은 크기의 이득보다 손실을 약 2배 정도 크게 느낀다. 예를 들어 1만원을 잃는 고통은 1만원을 얻는 기쁨보다 크다.
+- 예시: &quot;이번 주까지 신청하지 않으면 장학금 50만원을 잃습니다&quot;라는 안내가 &quot;신청하면 50만원을 받습니다&quot;보다 신청률이 높게 나타나는 경향이 있다.
+- 관련 개념: 보유 효과(Endowment Effect). 내가 가진 물건을 더 높게 평가하는 경향. 중고거래에서 판매자가 부르는 가격이 구매자가 생각하는 가격보다 높은 이유 중 하나다.
+
+## 3. 프레이밍 효과 (Framing Effect)
+같은 정보라도 어떻게 표현하느냐에 따라 선택이 달라진다.
+- 예시: &quot;수술 성공률 90%&quot;와 &quot;수술 사망률 10%&quot;는 같은 정보지만 앞의 표현에서 수술을 선택하는 비율이 더 높다.
+- 학생 생활 예시: &quot;학식 5,500원&quot;보다 &quot;배달 대비 1끼 1만원 절약&quot;이라고 말하면 학식을 고르는 사람이 늘 수 있다.
+
+## 4. 현재 편향 (Present Bias)과 쌍곡형 할인
+사람은 미래의 큰 보상보다 지금의 작은 보상을 지나치게 선호한다. 그래서 &quot;시험 공부는 내일부터&quot;라는 계획이 반복된다.
+- 해결 전략: 약속 장치(Commitment Device). 미리 스스로를 묶어두는 장치. 예: 스터디 그룹 벌금, 앱 사용 시간 제한, 자동 적금.
+
+## 5. 넛지 (Nudge)
+탈러와 선스타인(2008)은 선택을 금지하지 않으면서 더 나은 선택을 쉽게 만드는 설계를 &#x27;넛지&#x27;라고 불렀다.
+- 예시: 퇴직연금 자동 가입(기본값 효과), 학생식당에서 과일을 계산대 앞에 배치하기.
+- 비판: 설계자의 의도가 늘 선하다는 보장이 없다는 점, 개인의 자율성을 침해할 수 있다는 점.
+
+## 6. 이번 주 핵심 정리
+1. 사람은 손실을 이득보다 약 2배 크게 느낀다 (손실 회피).
+2. 같은 정보도 표현 방식에 따라 선택이 바뀐다 (프레이밍).
+3. 사람은 지금의 작은 보상을 과대평가한다 (현재 편향).
+4. 넛지는 선택의 자유를 유지하면서 행동을 바꾸는 설계다.
+
+## 생각해볼 질문
+- 내가 최근에 손실 회피 때문에 내린 결정은 무엇인가?
+- 우리 학교 장학금 안내문을 프레이밍 효과를 이용해 다시 쓴다면 어떻게 쓸 수 있을까?</pre></details>
+  <p class="dlmsg" aria-live="polite"></p>
+</div>
+    <div class="file">
+  <div class="fhead"><span class="ficon" aria-hidden="true">MD</span><div class="fmeta"><b>채용 공고와 자소서 초안 (가상)</b><span>자소서_초안_채용공고_가상.md · 자소서 코치 테스트에 붙여넣기</span></div></div>
+  <div class="fbtns"><button type="button" class="dlbtn" data-fn="자소서_초안_채용공고_가상.md">파일 내려받기</button><button type="button" class="copy">내용 복사</button></div>
+  <details><summary>내용 미리보기</summary><pre># 자소서 코치 실습 자료 (가상)
+
+&gt; 실습용으로 만든 가상 자료입니다. 회사, 공고, 인물은 실제와 관계없습니다.
+
+## 1. 채용 공고: 해운대데이터랩(가상) 2027 상반기 신입 데이터 분석가
+
+- 회사 소개: 부산 해운대구에 있는 직원 80명 규모의 리테일 데이터 분석 회사. 부산·경남 지역 마트와 프랜차이즈의 매출·재고 데이터를 분석해 발주와 프로모션을 제안한다.
+- 모집 인원: 신입 2명 (2027년 2월 졸업 예정자 지원 가능)
+- 하는 일
+  - 고객사 매출 데이터 정리와 주간 리포트 작성
+  - SQL로 데이터 추출, Excel·Python으로 분석
+  - 프로모션 효과 분석 결과를 고객사 담당자에게 발표
+- 지원 자격: 전공 무관, 데이터 분석 관련 수업이나 프로젝트 경험
+- 우대 사항: SQL 활용 경험, ADsP 등 데이터 관련 자격증, 팀 프로젝트에서 분석 결과를 발표해 본 경험
+- 인재상: &quot;숫자로 말하고, 상대가 알아듣게 설명하는 사람&quot;
+- 자기소개서 문항
+  1. 데이터를 활용해 문제를 해결한 경험을 구체적으로 작성해 주세요. (700자 이내)
+  2. 해운대데이터랩에 지원한 동기와 입사 후 3년 안에 이루고 싶은 목표를 작성해 주세요. (500자 이내)
+
+## 2. 지원자 정보 (가상)
+
+- 이름: 김부산 (부산대 경영학과 3학년, 2027년 2월 졸업 예정)
+- 관련 수업: 경영통계(B0), 데이터분석입문(A+ 예정)
+- 경험: 교내 카페 동아리 회계 담당 1년, 마케팅원론 팀 프로젝트 발표, 편의점 아르바이트 1년 6개월
+- 자격증: 없음 (ADsP 2027년 3월 응시 예정)
+
+## 3. 문항 1 초안 (고칠 점이 있는 상태)
+
+저는 항상 데이터를 중요하게 생각하는 사람입니다. 편의점에서 아르바이트를 하면서 많은 것을 배웠습니다. 편의점에서는 매일 많은 상품이 들어오고 나가는데 저는 그것을 보면서 데이터의 중요성을 느꼈습니다.
+
+어느 날 점장님께서 삼각김밥이 자꾸 남는다고 하셨습니다. 그래서 저는 엑셀로 정리를 해보았습니다. 요일별로 판매량을 정리해 보니 월요일과 금요일이 많이 팔리고 수요일이 적게 팔렸습니다. 저는 이것을 점장님께 말씀드렸고 발주량을 조정하게 되었습니다. 그 결과 폐기가 많이 줄었습니다.
+
+또한 동아리에서 회계를 맡아 꼼꼼하게 일했습니다. 저는 책임감이 강하고 성실한 사람입니다. 이러한 경험을 바탕으로 귀사에서 최선을 다하는 데이터 분석가가 되겠습니다.
+
+(공백 포함 약 390자)
+
+## 4. 코치가 짚어야 할 점 (강사용 정답 예시)
+
+- 첫 문장이 &quot;데이터를 중요하게 생각한다&quot;는 일반론이라 경험이 늦게 나온다.
+- 기간, 데이터 양, 폐기가 &quot;얼마나&quot; 줄었는지 숫자가 없다. (예: 8주 판매 기록, 폐기 주 30개 → 12개)
+- 본인이 한 일(정리 방법, 판단 근거)과 점장님이 한 일이 섞여 있다.
+- 마지막 문단의 동아리 회계와 &quot;성실함&quot;은 문항(데이터로 문제 해결)과 거리가 있다.
+- 700자 중 390자만 써서 분석 과정과 배운 점을 더 쓸 공간이 있다.
+- 면접 예상 질문: &quot;요일별 차이의 원인은 무엇이라고 보았나요?&quot;, &quot;날씨나 행사 같은 다른 변수는 고려했나요?&quot;</pre></details>
+  <p class="dlmsg" aria-live="polite"></p>
+</div>
+    <h4 class="sub">스킬 A · B (하나 고르기)</h4>
+    <div class="skill">
+  <h4 class="sname">과목 튜터 <code>/과목튜터</code></h4>
+  <div class="file skdl"><pre hidden># 스킬: 과목튜터
+
+&gt; Gemini [맞춤설정] → [스킬] → [만들기] → [직접 만들기]에서 아래 세 칸을 그대로 붙여넣으세요.
+&gt; 새 대화에서 /과목튜터 으로 불러 씁니다.
+
+## 이름
+과목튜터
+
+## 설명
+내가 올린 강의자료만 근거로 개념 설명, 확인 문제, 오답 해설을 해 주는 시험공부 튜터
+
+## 지침
+# 역할
+너는 부산대 학생의 시험공부를 돕는 &#x27;과목 튜터&#x27;야. 내가 대화에 붙여넣거나 올린 강의자료만 근거로 가르친다.
+
+# 시작할 때
+1. 자료를 받으면 먼저 자료 제목과 다루는 개념 목록(최대 7개)을 보여줘.
+2. 시험까지 남은 날짜와 오늘 공부할 시간(분)을 물어봐. 내가 이미 말했으면 다시 묻지 마.
+3. 남은 시간에 맞춰 오늘 다룰 개념 순서를 제안해.
+
+# 개념을 설명할 때 (한 번에 개념 하나)
+- 한 줄 정의 → 대학생 일상 예시 1개 → 시험 포인트(자주 헷갈리는 점) 순서로, 5줄 안쪽.
+- 자료의 표현을 우선하고, 근거가 된 부분을 &quot;(자료: ○○ 부분)&quot;처럼 짧게 밝혀.
+- 설명이 끝나면 바로 확인 문제 2개(객관식 1개, 서술형 1개)를 내고 내 답을 기다려.
+
+# 채점할 때
+- 정답 / 부분 정답 / 오답으로 판정하고, 이유를 2문장으로 해설해.
+- 틀린 개념은 &#x27;복습 목록&#x27;에 넣어 둬.
+
+# 지킬 것
+- 자료에 없는 내용은 &quot;자료에 없음&quot;이라고 말하고 지어내지 마. 일반 지식으로 보충할 때는 앞에 [자료 밖 설명]이라고 표시해.
+- 답을 먼저 알려 달라고 해도 한 번은 힌트부터 줘.
+- 한국어로, 한 번에 화면 한 페이지를 넘기지 마.
+
+# 마무리 (내가 &quot;끝&quot;이라고 하면)
+| 개념 | 이해도(상·중·하) | 다시 볼 부분 | 표와 &quot;다음 공부 때 할 일&quot; 2개.
+
+## 테스트 (새 대화에 입력)
+/과목튜터 시험은 5일 뒤고 오늘은 30분 공부할 수 있어. 아래 강의자료로 시작하자.
+
+[샘플강의자료_행동경제학_3주차.md 내용 붙여넣기]
+</pre><div class="fbtns"><button type="button" class="dlbtn" data-fn="스킬_과목튜터.md">스킬 파일 받기 (.md)</button></div><p class="dlmsg" aria-live="polite"></p></div>
+  <div class="crow"><span class="clab">이름</span><pre>과목튜터</pre><button type="button" class="copy">복사</button></div>
+  <div class="crow"><span class="clab">설명</span><pre>내가 올린 강의자료만 근거로 개념 설명, 확인 문제, 오답 해설을 해 주는 시험공부 튜터</pre><button type="button" class="copy">복사</button></div>
+  <div class="crow tall"><span class="clab">지침</span><pre># 역할
+너는 부산대 학생의 시험공부를 돕는 &#x27;과목 튜터&#x27;야. 내가 대화에 붙여넣거나 올린 강의자료만 근거로 가르친다.
+
+# 시작할 때
+1. 자료를 받으면 먼저 자료 제목과 다루는 개념 목록(최대 7개)을 보여줘.
+2. 시험까지 남은 날짜와 오늘 공부할 시간(분)을 물어봐. 내가 이미 말했으면 다시 묻지 마.
+3. 남은 시간에 맞춰 오늘 다룰 개념 순서를 제안해.
+
+# 개념을 설명할 때 (한 번에 개념 하나)
+- 한 줄 정의 → 대학생 일상 예시 1개 → 시험 포인트(자주 헷갈리는 점) 순서로, 5줄 안쪽.
+- 자료의 표현을 우선하고, 근거가 된 부분을 &quot;(자료: ○○ 부분)&quot;처럼 짧게 밝혀.
+- 설명이 끝나면 바로 확인 문제 2개(객관식 1개, 서술형 1개)를 내고 내 답을 기다려.
+
+# 채점할 때
+- 정답 / 부분 정답 / 오답으로 판정하고, 이유를 2문장으로 해설해.
+- 틀린 개념은 &#x27;복습 목록&#x27;에 넣어 둬.
+
+# 지킬 것
+- 자료에 없는 내용은 &quot;자료에 없음&quot;이라고 말하고 지어내지 마. 일반 지식으로 보충할 때는 앞에 [자료 밖 설명]이라고 표시해.
+- 답을 먼저 알려 달라고 해도 한 번은 힌트부터 줘.
+- 한국어로, 한 번에 화면 한 페이지를 넘기지 마.
+
+# 마무리 (내가 &quot;끝&quot;이라고 하면)
+| 개념 | 이해도(상·중·하) | 다시 볼 부분 | 표와 &quot;다음 공부 때 할 일&quot; 2개.</pre><button type="button" class="copy">지침 복사</button></div>
+  <div class="crow"><span class="clab">테스트</span><pre>/과목튜터 시험은 5일 뒤고 오늘은 30분 공부할 수 있어. 아래 강의자료로 시작하자.
+
+[샘플강의자료_행동경제학_3주차.md 내용 붙여넣기]</pre><button type="button" class="copy">복사</button></div>
+  <div class="result"><h4>결과 확인: 이렇게 나오면 성공</h4><ul><li>첫 답에 자료 제목과 개념 목록(손실 회피, 프레이밍 등)이 먼저 나온다.</li><li>날짜·시간을 이미 말했으니 다시 묻지 않고 30분 학습 순서를 제안한다.</li><li>개념 하나를 정의 → 예시 → 시험 포인트 순서로 설명하고 확인 문제 2개를 낸다.</li><li>&quot;앵커링 효과는?&quot;처럼 자료에 없는 것을 물으면 &quot;자료에 없음&quot;이라고 답한다. 지어내면 지침의 &#x27;지킬 것&#x27;을 더 강하게 고쳐 보세요.</li></ul></div>
+</div><div class="skill">
+  <h4 class="sname">자소서 코치 <code>/자소서코치</code></h4>
+  <div class="file skdl"><pre hidden># 스킬: 자소서코치
+
+&gt; Gemini [맞춤설정] → [스킬] → [만들기] → [직접 만들기]에서 아래 세 칸을 그대로 붙여넣으세요.
+&gt; 새 대화에서 /자소서코치 으로 불러 씁니다.
+
+## 이름
+자소서코치
+
+## 설명
+채용 공고와 자소서 초안을 받아, 대신 쓰지 않고 근거 있는 피드백과 면접 예상 질문을 주는 코치
+
+## 지침
+# 역할
+너는 대학생 취업 준비를 돕는 &#x27;자소서 코치&#x27;야. 목표는 내가 내 경험으로 더 좋은 글을 쓰게 돕는 것이지, 대신 써 주는 것이 아니야.
+
+# 내가 주는 것
+채용 공고(또는 희망 직무), 자소서 문항과 글자 수 제한, 내 초안. 빠진 것이 있으면 그것만 먼저 물어봐.
+
+# 피드백 순서
+1. 공고 분석: 회사가 원하는 역량 3개를 표로 정리 (역량 | 공고 속 근거 문장).
+2. 문항 적합도: 초안이 문항이 묻는 것에 답하고 있는지 한 줄로 판정.
+3. 강점 2개: 살릴 문장을 그대로 인용하고 이유를 한 줄씩.
+4. 고칠 점 3개: &quot;몇 번째 문단, 어떤 문장&quot;을 인용하고, 왜 약한지와 고칠 방향을 나에게 묻는 질문으로 (예: &quot;폐기가 몇 개에서 몇 개로 줄었나요?&quot;).
+5. 역량 연결: 공고 역량 3개 중 초안에 드러난 것과 빠진 것.
+6. 면접 예상 질문 2개.
+7. 글자 수: 현재 글자 수(공백 포함, 대략)와 제한까지 남은 여유.
+
+# 지킬 것
+- 내가 &quot;예시 문장 보여줘&quot;라고 할 때만 고친 문장을 보여주고, 한 번에 2문장까지만.
+- 내가 말하지 않은 경험, 숫자, 자격증을 만들어 넣지 마. 숫자가 필요하면 &quot;직접 확인해 넣을 것: [ ]&quot;로 비워 둬.
+- 정중하지만 솔직하게. 칭찬만 하지 마.
+- 한국어로 답해.
+
+## 테스트 (새 대화에 입력)
+/자소서코치 아래 채용 공고, 문항 1, 내 초안이야. 피드백해줘.
+
+[자소서_초안_채용공고_가상.md 내용 붙여넣기]
+</pre><div class="fbtns"><button type="button" class="dlbtn" data-fn="스킬_자소서코치.md">스킬 파일 받기 (.md)</button></div><p class="dlmsg" aria-live="polite"></p></div>
+  <div class="crow"><span class="clab">이름</span><pre>자소서코치</pre><button type="button" class="copy">복사</button></div>
+  <div class="crow"><span class="clab">설명</span><pre>채용 공고와 자소서 초안을 받아, 대신 쓰지 않고 근거 있는 피드백과 면접 예상 질문을 주는 코치</pre><button type="button" class="copy">복사</button></div>
+  <div class="crow tall"><span class="clab">지침</span><pre># 역할
+너는 대학생 취업 준비를 돕는 &#x27;자소서 코치&#x27;야. 목표는 내가 내 경험으로 더 좋은 글을 쓰게 돕는 것이지, 대신 써 주는 것이 아니야.
+
+# 내가 주는 것
+채용 공고(또는 희망 직무), 자소서 문항과 글자 수 제한, 내 초안. 빠진 것이 있으면 그것만 먼저 물어봐.
+
+# 피드백 순서
+1. 공고 분석: 회사가 원하는 역량 3개를 표로 정리 (역량 | 공고 속 근거 문장).
+2. 문항 적합도: 초안이 문항이 묻는 것에 답하고 있는지 한 줄로 판정.
+3. 강점 2개: 살릴 문장을 그대로 인용하고 이유를 한 줄씩.
+4. 고칠 점 3개: &quot;몇 번째 문단, 어떤 문장&quot;을 인용하고, 왜 약한지와 고칠 방향을 나에게 묻는 질문으로 (예: &quot;폐기가 몇 개에서 몇 개로 줄었나요?&quot;).
+5. 역량 연결: 공고 역량 3개 중 초안에 드러난 것과 빠진 것.
+6. 면접 예상 질문 2개.
+7. 글자 수: 현재 글자 수(공백 포함, 대략)와 제한까지 남은 여유.
+
+# 지킬 것
+- 내가 &quot;예시 문장 보여줘&quot;라고 할 때만 고친 문장을 보여주고, 한 번에 2문장까지만.
+- 내가 말하지 않은 경험, 숫자, 자격증을 만들어 넣지 마. 숫자가 필요하면 &quot;직접 확인해 넣을 것: [ ]&quot;로 비워 둬.
+- 정중하지만 솔직하게. 칭찬만 하지 마.
+- 한국어로 답해.</pre><button type="button" class="copy">지침 복사</button></div>
+  <div class="crow"><span class="clab">테스트</span><pre>/자소서코치 아래 채용 공고, 문항 1, 내 초안이야. 피드백해줘.
+
+[자소서_초안_채용공고_가상.md 내용 붙여넣기]</pre><button type="button" class="copy">복사</button></div>
+  <div class="result"><h4>결과 확인: 이렇게 나오면 성공</h4><ul><li>공고 역량 3개가 표로 나온다. 예: 데이터 추출·분석(SQL·Excel), 분석 결과 설명·발표, 문제 해결 경험.</li><li>고칠 점에 &#x27;숫자가 없다(폐기가 얼마나 줄었나)&#x27;, &#x27;첫 문장이 일반론&#x27;, &#x27;동아리 회계 문단이 문항과 멀다&#x27;가 들어 있다.</li><li>고친 글 전체를 대신 써 주지 않고, 내가 말하지 않은 숫자를 지어내지 않는다.</li><li>면접 질문 2개와 글자 수 여유(700자 중 약 390자)가 나온다. 파일 맨 아래 &#x27;코치가 짚어야 할 점&#x27;과 비교해 보세요.</li></ul></div>
+</div>
+    <h4 class="sub">더 만들기: 팀플 매니저와 겹쳐 쓰기</h4>
+    <div class="grid"><article class="pc"><header><h4>팀플 매니저 /팀플매니저</h4><span class="when">이름 팀플매니저 · 설명: 회의 메모와 단톡을 결정사항·할 일·공지로 정리</span></header><pre># 역할
+너는 대학 팀 프로젝트의 &#x27;팀플 매니저&#x27;야.
+
+# 할 일
+1. 내가 회의 메모나 단톡 내용을 붙여넣으면 결정사항 / 할 일 / 아직 안 정해진 것 세 칸으로 나눠.
+2. 할 일은 표로: | 할 일 | 담당자 | 마감일 | 상태 |
+3. 담당자나 마감일이 비어 있는 할 일은 🚩로 표시하고, 누구에게 무엇을 물어볼지 한 줄로 제안해.
+4. 마지막에 단톡방에 바로 올릴 5줄 이내 공지문을 써. 말투는 정중하지만 딱딱하지 않게.
+
+# 지킬 것
+- 메모에 없는 결정이나 담당자를 지어내지 마.
+- 실명이 있으면 공지문에서는 이름 대신 역할(발표 담당 등)로 바꿔 쓸지 먼저 물어봐.</pre><button type="button" class="copy">복사</button><div class="file skdl"><pre hidden># 스킬: 팀플매니저
+
+&gt; Gemini [맞춤설정] → [스킬] → [만들기] → [직접 만들기]에서 아래 세 칸을 그대로 붙여넣으세요.
+&gt; 새 대화에서 /팀플매니저 으로 불러 씁니다.
+
+## 이름
+팀플매니저
+
+## 설명
+회의 메모와 단톡을 결정사항·할 일·공지로 정리
+
+## 지침
+# 역할
+너는 대학 팀 프로젝트의 &#x27;팀플 매니저&#x27;야.
+
+# 할 일
+1. 내가 회의 메모나 단톡 내용을 붙여넣으면 결정사항 / 할 일 / 아직 안 정해진 것 세 칸으로 나눠.
+2. 할 일은 표로: | 할 일 | 담당자 | 마감일 | 상태 |
+3. 담당자나 마감일이 비어 있는 할 일은 🚩로 표시하고, 누구에게 무엇을 물어볼지 한 줄로 제안해.
+4. 마지막에 단톡방에 바로 올릴 5줄 이내 공지문을 써. 말투는 정중하지만 딱딱하지 않게.
+
+# 지킬 것
+- 메모에 없는 결정이나 담당자를 지어내지 마.
+- 실명이 있으면 공지문에서는 이름 대신 역할(발표 담당 등)로 바꿔 쓸지 먼저 물어봐.
+</pre><div class="fbtns"><button type="button" class="dlbtn" data-fn="스킬_팀플매니저.md">스킬 파일 받기 (.md)</button></div><p class="dlmsg" aria-live="polite"></p></div></article><article class="pc"><header><h4>표+3줄 요약 /표요약</h4><span class="when">이름 표요약 · 설명: 어떤 답이든 3줄 요약 + 표 + 다음 할 일 형식으로 정리 (다른 스킬과 겹쳐 쓰기)</span></header><pre># 형식 규칙
+모든 답을 이 순서로 써.
+1. 맨 위: 핵심 3줄 요약 (한 줄에 한 문장)
+2. 본문: 비교·목록은 표로, 설명은 짧은 문단으로
+3. 맨 아래: &#x27;다음에 할 일&#x27; 1~2개
+
+# 지킬 것
+- 전문용어에는 괄호로 쉬운 말을 붙여.
+- 한국어로 답해.</pre><button type="button" class="copy">복사</button><div class="file skdl"><pre hidden># 스킬: 표요약
+
+&gt; Gemini [맞춤설정] → [스킬] → [만들기] → [직접 만들기]에서 아래 세 칸을 그대로 붙여넣으세요.
+&gt; 새 대화에서 /표요약 으로 불러 씁니다.
+
+## 이름
+표요약
+
+## 설명
+어떤 답이든 3줄 요약 + 표 + 다음 할 일 형식으로 정리 (다른 스킬과 겹쳐 쓰기)
+
+## 지침
+# 형식 규칙
+모든 답을 이 순서로 써.
+1. 맨 위: 핵심 3줄 요약 (한 줄에 한 문장)
+2. 본문: 비교·목록은 표로, 설명은 짧은 문단으로
+3. 맨 아래: &#x27;다음에 할 일&#x27; 1~2개
+
+# 지킬 것
+- 전문용어에는 괄호로 쉬운 말을 붙여.
+- 한국어로 답해.
+</pre><div class="fbtns"><button type="button" class="dlbtn" data-fn="스킬_표요약.md">스킬 파일 받기 (.md)</button></div><p class="dlmsg" aria-live="polite"></p></div></article><article class="pc"><header><h4>겹쳐 쓰기 테스트</h4><span class="when">새 대화에서 입력</span></header><pre>/과목튜터 /표요약 아래 강의자료로 손실 회피를 공부하고 싶어. 시험은 5일 뒤야.
+
+[샘플강의자료_행동경제학_3주차.md 내용 붙여넣기]</pre><button type="button" class="copy">복사</button></article></div>
+    <div class="file pack skillpack" id="skilldl"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>스킬 4개 한 번에 받기</b><span>스킬_4종.zip · /과목튜터, /자소서코치, /팀플매니저, /표요약 · 파일을 열어 이름·설명·지침을 복사해 붙여넣으세요</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="skills" data-fn="스킬_4종.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/skills/s1.md" target="_blank" rel="noopener">01_과목튜터.md</a></li><li><a href="files/skills/s2.md" target="_blank" rel="noopener">02_자소서코치.md</a></li><li><a href="files/skills/s3.md" target="_blank" rel="noopener">03_팀플매니저.md</a></li><li><a href="files/skills/s4.md" target="_blank" rel="noopener">04_표요약.md</a></li></ul></details></div>
+  </article>
+
+  <article class="prac" id="g4">
+    <header class="ph"><span class="pno">1-3</span><div><h3>캔버스: 말로 웹앱 만들기</h3></div></header>
+    <p class="goal"><b>목표</b> 입력창 아래 [캔버스]를 켜고, 4요소(RCCF) 프롬프트와 실습 데이터로 한 학기 관리 웹앱을 만든 뒤, 정답 숫자와 맞는지 확인합니다. 더 만들고 싶으면 아래 <a href="#canvas100">캔버스 웹앱 100선</a>을 보세요.</p>
+    <ol class="flow"><li>입력창 아래 [캔버스]를 켭니다(스킬은 끄고).</li><li>만들 앱 하나를 고르고, 프롬프트를 붙여넣은 다음 맨 아래 [ ] 자리에 해당 CSV 내용을 붙여넣습니다.</li><li>오른쪽 [미리보기]에서 앱이 뜨면 '결과 확인'의 숫자와 맞는지 봅니다.</li><li>틀리면 "P 과목은 평점에서 빼줘"처럼 무엇이 틀렸는지 말로 고칩니다. 맞으면 기능 1개를 말로 추가합니다.</li><li>[공유]로 링크를 만들 수 있는지 확인합니다(학교 계정은 학교 밖 공유가 막힐 수 있음).</li></ol>
+    <h4 class="sub">실습 자료</h4>
+    <div class="file">
+  <div class="fhead"><span class="ficon" aria-hidden="true">CSV</span><div class="fmeta"><b>3학기 성적표 (가상, CSV)</b><span>이번학기_성적_가상.csv · 학점 계산기 프롬프트 아래에 붙여넣기</span></div></div>
+  <div class="fbtns"><button type="button" class="dlbtn" data-fn="이번학기_성적_가상.csv">파일 내려받기</button><button type="button" class="copy">내용 복사</button></div>
+  <details><summary>내용 미리보기</summary><pre>학기,과목명,이수구분,학점,성적
+2025-2,경영학원론,전공기초,3,A0
+2025-2,대학영어,교양,2,B+
+2025-2,미적분학,교양,3,B0
+2025-2,글쓰기와 소통,교양,2,A+
+2025-2,체육과 건강,교양,1,P
+2026-1,회계원리,전공기초,3,B+
+2026-1,통계학개론,전공기초,3,A0
+2026-1,경제학원론,교양,3,C+
+2026-1,컴퓨팅 사고,교양,3,A0
+2026-1,사회봉사,교양,1,P
+2026-2,재무관리,전공필수,3,B+
+2026-2,마케팅원론,전공필수,3,A0
+2026-2,경영통계,전공선택,3,B0
+2026-2,데이터분석입문,전공선택,3,A+
+2026-2,일본어회화,교양,2,A0</pre></details>
+  <p class="dlmsg" aria-live="polite"></p>
+</div>
+    <div class="file">
+  <div class="fhead"><span class="ficon" aria-hidden="true">CSV</span><div class="fmeta"><b>팀원 3명 시간표 (가상, CSV)</b><span>팀원_시간표_가상.csv · 공강 찾기 프롬프트 아래에 붙여넣기</span></div></div>
+  <div class="fbtns"><button type="button" class="dlbtn" data-fn="팀원_시간표_가상.csv">파일 내려받기</button><button type="button" class="copy">내용 복사</button></div>
+  <details><summary>내용 미리보기</summary><pre>이름,요일,시작,종료,과목,강의실
+나,월,09:00,10:30,재무관리,경영관 203
+나,월,13:00,14:30,마케팅원론,경영관 301
+나,화,10:30,12:00,경영통계,경영관 105
+나,화,15:00,16:30,데이터분석입문,정보관 402
+나,수,09:00,10:30,재무관리,경영관 203
+나,수,13:00,14:30,마케팅원론,경영관 301
+나,목,10:30,12:00,경영통계,경영관 105
+나,목,15:00,16:30,데이터분석입문,정보관 402
+나,목,18:00,21:00,아르바이트,서면
+나,금,10:00,12:00,일본어회화,인문관 210
+민지,월,10:30,12:00,소비자행동,경영관 302
+민지,월,15:00,16:30,인사관리,경영관 204
+민지,화,09:00,10:30,경영정보시스템,정보관 301
+민지,화,13:00,14:30,소비자행동,경영관 302
+민지,수,10:30,12:00,인사관리,경영관 204
+민지,수,16:00,18:00,동아리,학생회관
+민지,목,09:00,10:30,경영정보시스템,정보관 301
+민지,목,13:00,14:30,회계원리,경영관 101
+민지,금,13:00,15:00,심리학의 이해,사회관 115
+준호,월,09:00,12:00,캡스톤디자인,공대 6호관
+준호,화,13:00,16:00,공학수학,공대 2호관
+준호,수,15:00,16:30,데이터베이스,정보관 501
+준호,목,09:00,10:30,운영체제,정보관 503
+준호,목,16:00,17:30,운영체제 실습,정보관 503
+준호,금,09:00,10:00,대학영어,인문관 105
+준호,금,14:00,18:00,아르바이트,장전동</pre></details>
+  <p class="dlmsg" aria-live="polite"></p>
+</div>
+    <div class="file">
+  <div class="fhead"><span class="ficon" aria-hidden="true">CSV</span><div class="fmeta"><b>한 달 가계부 샘플 (가상, CSV)</b><span>한달_가계부_샘플_가상.csv · 가계부 대시보드 프롬프트 아래에 붙여넣기</span></div></div>
+  <div class="fbtns"><button type="button" class="dlbtn" data-fn="한달_가계부_샘플_가상.csv">파일 내려받기</button><button type="button" class="copy">내용 복사</button></div>
+  <details><summary>내용 미리보기</summary><pre>날짜,분류,내용,금액(원)
+2026-10-01,주거,월세,380000
+2026-10-01,주거,관리비,70000
+2026-10-02,식비,편의점 아침,4500
+2026-10-03,식비,학식 점심,5500
+2026-10-03,카페,아이스 아메리카노,3200
+2026-10-04,식비,배달 치킨,23000
+2026-10-05,생활용품,세제·휴지,18000
+2026-10-06,교통,부산 시내버스 충전,20000
+2026-10-07,식비,학식 점심,5500
+2026-10-08,카페,카페라테,4500
+2026-10-09,교육,전공 교재,32000
+2026-10-10,식비,장보기,41000
+2026-10-11,여가,영화,14000
+2026-10-12,식비,배달 떡볶이,19000
+2026-10-14,통신,휴대폰 요금,45000
+2026-10-15,구독,음악 스트리밍,10900
+2026-10-16,식비,학식 저녁,5000
+2026-10-17,카페,시험공부 카페,6800
+2026-10-18,식비,배달 마라탕,17000
+2026-10-19,여가,동아리 회식,25000
+2026-10-21,식비,장보기,36000
+2026-10-23,카페,아이스 아메리카노,3200
+2026-10-24,식비,배달 피자,26000
+2026-10-26,의료,약국,7500
+2026-10-28,식비,학식 점심,5500
+2026-10-30,구독,OTT,13500
+2026-10-31,여가,할로윈 파티 회비,15000</pre></details>
+  <p class="dlmsg" aria-live="polite"></p>
+</div>
+    <h4 class="sub">프롬프트</h4>
+    <div class="grid"><article class="pc"><header><h4>학점 계산기</h4><span class="when">캔버스 켜고 + 성적 CSV 붙여넣기 (RCCF)</span></header><pre>[역할] 너는 대학생 학습 도구를 만드는 웹 개발자야.
+[맥락] 나는 부산대 학생이고, 이번 학기 성적이 나오기 전에 평점이 얼마나 될지, 장학금 기준을 넘는지 궁금해. 아래 CSV는 지난 두 학기 성적과 이번 학기 예상 성적이야.
+[명령] CSV를 처음 데이터로 불러와서 학기별 평점과 누적 평점을 계산하고, 장학금 기준 평점을 입력하면 이번 학기 달성 여부를 보여주는 웹앱을 만들어줘. 과목을 추가·삭제하거나 성적을 바꾸면 바로 다시 계산해줘.
+[형식] HTML 하나로 된 웹앱, 한국어, 4.5 만점(A+ 4.5, A0 4.0, B+ 3.5, B0 3.0, C+ 2.5, C0 2.0, D+ 1.5, D0 1.0, F 0). P 과목은 이수 학점에는 넣고 평점 계산에서는 빼줘. 휴대폰에서도 보기 좋게.
+
+[이번학기_성적_가상.csv 내용 붙여넣기]</pre><button type="button" class="copy">복사</button></article><article class="pc"><header><h4>공강 찾기 시간표</h4><span class="when">캔버스 켜고 + 시간표 CSV 붙여넣기 (RCCF)</span></header><pre>[역할] 너는 대학생 시간 관리 앱을 만드는 웹 개발자야.
+[맥락] 팀플 회의 시간을 잡아야 하는데 세 명의 시간표가 다 달라. 아래 CSV는 나, 민지, 준호의 시간표야.
+[명령] CSV를 불러와 사람별 주간 시간표를 격자로 그리고, 체크한 사람들이 모두 비는 1시간 이상 시간을 초록색으로 표시하고 목록으로도 보여줘. 회의 길이(분)를 고르면 그 길이가 가능한 시간만 남겨줘.
+[형식] HTML 하나로 된 웹앱, 한국어, 월~금 9시~18시 격자, 사람별 색, 새 수업을 추가할 수 있게, 입력 내용은 브라우저에 저장.
+
+[팀원_시간표_가상.csv 내용 붙여넣기]</pre><button type="button" class="copy">복사</button></article><article class="pc"><header><h4>가계부 대시보드</h4><span class="when">캔버스 켜고 + 가계부 CSV 붙여넣기 (RCCF)</span></header><pre>[역할] 너는 자취하는 대학생의 생활비 관리를 돕는 웹 개발자야.
+[맥락] 자취를 시작했는데 돈이 어디로 새는지 모르겠어. 아래는 내 한 달 가계부야.
+[명령] 분류별 지출 합계 막대그래프와 총지출, 가장 많이 쓴 분류 3개와 다음 달 절약 목표를 보여주고, 새 지출을 입력하면 그래프가 바로 바뀌는 대시보드를 만들어줘.
+[형식] HTML 하나로 된 웹앱, 한국어, 휴대폰에서도 보기 좋게.
+
+[한달_가계부_샘플_가상.csv 내용 붙여넣기]</pre><button type="button" class="copy">복사</button></article></div>
+    <div class="result"><h4>결과 확인: 이렇게 나오면 성공</h4><ul><li><b>학점 계산기</b>: 2026-2학기 평점 <b>3.79</b>(14학점), 2025-2 <b>3.70</b>, 2026-1 <b>3.50</b>, 누적 평점 <b>3.67</b>(평점 반영 36학점, 총 이수 38학점). 장학 기준 3.5를 넣으면 '달성'. 누적이 3.47로 나오면 P 과목을 0점으로 계산한 것입니다.</li><li><b>공강 찾기</b>(9~18시, 세 명 모두): 월·화 12:00~13:00과 16:30~18:00, 수·목·금 12:00~13:00. 90분 회의가 되는 시간은 <b>월·화 16:30~18:00</b>뿐입니다.</li><li><b>가계부</b>: 총지출 <b>856,600원</b>, 많이 쓴 분류는 주거 450,000원 · 식비 188,000원 · 여가 54,000원.</li><li>AI가 만든 앱도 계산을 틀릴 수 있습니다. 숫자 하나는 꼭 손으로 검산하세요.</li></ul></div>
+  </article>
+
+  <article class="prac" id="g5">
+    <header class="ph"><span class="pno">1-4</span><div><h3>Deep Research 결과 검증과 저장</h3></div></header>
+    <p class="goal"><b>목표</b> 1-1에서 시작한 보고서의 출처를 직접 눌러 검증하고, Google Docs로 저장해 노트북 소스로 넘길 준비를 합니다.</p>
+    <ol class="flow"><li>보고서 맨 위 요약만 먼저 읽습니다.</li><li>아래 검증표를 내려받아, 본문의 출처 번호 2개 이상을 눌러 항목마다 O / X / 모름을 표시합니다.</li><li>숫자 하나(연봉, 채용 인원 등)를 골라 원문과 대조합니다. 다르면 "이 문장의 출처를 다시 확인해줘"라고 요청합니다.</li><li>[내보내기] → Google Docs로 저장합니다. 파일 이름 <code>진로보고서_[희망직무]_[이름]</code>.</li><li>아직 안 끝났으면 휴식 시간에 다시 확인합니다.</li></ol>
+    <h4 class="sub">실습 자료</h4>
+    <div class="file">
+  <div class="fhead"><span class="ficon" aria-hidden="true">MD</span><div class="fmeta"><b>Deep Research 공식 출처 목록과 검증표</b><span>딥리서치_공식출처_검증표.md · 보고서를 볼 때 옆에 띄워 두기</span></div></div>
+  <div class="fbtns"><button type="button" class="dlbtn" data-fn="딥리서치_공식출처_검증표.md">파일 내려받기</button><button type="button" class="copy">내용 복사</button></div>
+  <details><summary>내용 미리보기</summary><pre># Deep Research 진로 조사: 공식 출처 목록과 검증표
+
+&gt; 링크는 2026년 11월 기준입니다. 사이트 개편으로 주소가 바뀔 수 있으니 열리지 않으면 기관 이름으로 검색하세요.
+
+## 1. 진로·직무 조사에 쓰기 좋은 공식 출처
+
+| 출처 | 주소 | 무엇을 볼 수 있나 |
+|---|---|---|
+| 고용24 (고용노동부) | https://www.work24.go.kr | 채용 공고, 직업·학과 정보, 직무별 임금·전망 (옛 워크넷 통합) |
+| 커리어넷 (한국직업능력연구원) | https://www.career.go.kr | 직업 정보, 하는 일, 필요 역량, 관련 학과 |
+| 잡알리오 (공공기관 채용정보) | https://job.alio.go.kr | 공공기관 채용 공고와 전형 정보 |
+| DART 전자공시시스템 (금융감독원) | https://dart.fss.or.kr | 기업 사업보고서: 매출, 직원 수, 사업 내용 |
+| KOSIS 국가통계포털 (통계청) | https://kosis.kr | 지역·산업별 고용 통계 |
+| 부산일자리정보망 (부산광역시) | https://www.busanjob.net | 부산 지역 채용 공고와 일자리 정책 |
+| 큐넷 (한국산업인력공단) | https://www.q-net.or.kr | 국가자격증 시험 일정과 응시 자격 |
+| 기업 공식 채용 페이지 | 기업 홈페이지 | 직무 소개, 인재상, 실제 공고 |
+| 부산대 대학일자리플러스센터 | 학교 홈페이지에서 검색 | 교내 취업 프로그램, 상담, 선배 취업 사례 |
+
+## 2. 보고서 검증표 (출처 2개 이상 눌러보고 표시)
+
+| 확인 항목 | 확인 방법 | 결과 (O / X / 모름) |
+|---|---|---|
+| 출처가 공식 기관·기업 자료인가 | 링크를 눌러 사이트 주인 확인 (블로그·카페·광고 글이면 X) | |
+| 날짜가 2025년 이후인가 | 페이지의 게시일·기준일 확인 | |
+| 보고서 문장이 출처 내용과 같은가 | 숫자(연봉, 채용 인원, 비율) 하나를 골라 원문과 대조 | |
+| 출처가 없는 주장이 있는가 | 번호가 안 달린 문장 표시 | |
+| 지역 정보가 맞는가 | 부산·경남 기업 예시가 실제로 그 지역인지 확인 | |
+| 빠진 관점이 있는가 | 공공기관·중소기업·스타트업 중 빠진 쪽이 있는지 | |
+
+## 3. 검증 후 할 일
+
+1. 틀리거나 근거 없는 문장은 Gemini에게 &quot;이 문장의 출처를 다시 확인해줘&quot;라고 요청합니다.
+2. [내보내기] → Google Docs로 저장합니다. 파일 이름: `진로보고서_[희망직무]_[이름]`
+3. 내 진로 노트북에 이 문서를 소스로 넣어 둡니다.</pre></details>
+  <p class="dlmsg" aria-live="polite"></p>
+</div>
+    <div class="result"><h4>결과 확인: 이렇게 나오면 성공</h4><ul><li>보고서 출처 대부분이 고용24·커리어넷·DART·기업 채용 페이지 같은 공식 자료다.</li><li>검증표 6개 항목 중 4개 이상이 O. X가 많으면 계획 수정 문장을 바꿔 다시 조사합니다.</li><li>Google Docs에 저장되어 Drive에서 찾을 수 있다. 수업 후 내 진로 노트북에 [소스 추가] → [Google Drive]로 넣어 두세요.</li></ul></div>
+    <h4 class="sub">언제 무엇을 쓰나</h4>
+    <div class="tw"><table class="gt"><thead><tr><th>이럴 때</th><th>도구</th></tr></thead><tbody>
+      <tr><td>같은 부탁을 매번 반복</td><td>스킬</td></tr>
+      <tr><td>빈 종이에서 앱·문서 만들기</td><td>캔버스</td></tr>
+      <tr><td>웹 전체에서 자료 조사</td><td>Deep Research</td></tr>
+      <tr><td>내 자료만 근거로 답해야 할 때</td><td>Gemini Notebook (Part 2)</td></tr>
+    </tbody></table></div>
+  </article>
+</section>
+
+<section id="part2">
+  <p class="eyebrow">Part 2</p>
+  <h2>Gemini Notebook</h2>
+  <p class="lead">실습 5개, 실습마다 스튜디오 결과물은 1개씩. 자동 라벨·웹 탐색·계산·이미지 생성은 채팅과 소스 패널에서 합니다.</p>
+  <div class="tw"><table class="gt ov">
+  <thead><tr><th>실습</th><th>주제</th><th>교육내용</th><th>대표 결과물</th><th>채팅에서 하는 것</th></tr></thead>
+  <tbody>
+    <tr><td><a href="#nb1">1</a></td><td>중간고사 대비 과목별 노트북</td><td>1</td><td><b>마인드맵</b></td><td>자동 라벨, 웹 탐색, 소스 선택</td></tr>
+    <tr><td><a href="#nb2">2</a></td><td>강의자료·논문 빠르게 읽기</td><td>2</td><td><b>보고서 (브리핑 문서)</b></td><td>핵심 개념 표, 환각 확인</td></tr>
+    <tr><td><a href="#nb3">3</a></td><td>시험 대비 복습 세트</td><td>4</td><td><b>퀴즈</b></td><td>틀린 문제 다시 묻기</td></tr>
+    <tr><td><a href="#nb4">4</a></td><td>장학금·청년 정책·자취 생활비 비교</td><td>3</td><td><b>데이터 표</b></td><td>월 고정비 계산 (데이터 분석)</td></tr>
+    <tr><td><a href="#nb5">5</a></td><td>축제 포스터 만들고 발표 자료에 넣기</td><td>4 + 추가</td><td><b>슬라이드 자료 (PPTX)</b></td><td>샘플 이미지로 새 포스터 생성</td></tr>
+  </tbody>
+</table></div>
+  <article class="prac" id="llm-lab">
+    <header class="ph"><span class="pno">원리</span><div><h3>LLM·RAG 체험: 멈춰 있는 단어 지도</h3></div></header>
+    <p class="goal"><b>목표</b> AI가 왜 그럴듯하게 틀리는지, 자료를 넣으면 왜 달라지는지 직접 눌러보며 확인합니다.</p>
+    <ol class="flow"><li><b>학습</b> 문장을 읽으며 단어들이 지도 위에 자리를 잡는 과정을 봅니다.</li><li><b>탐색</b> 가까운 단어, 먼 단어를 눌러보며 AI가 의미를 거리로 기억한다는 것을 확인합니다.</li><li><b>대화</b> 학습이 끝나면 가중치가 고정됩니다. 모르는 것을 물으면 확신에 찬 환각이 나오는 것을 봅니다.</li><li><b>자료 넣기</b> 같은 질문에 자료를 함께 넣으면(RAG) 답이 어떻게 바뀌는지 비교합니다.</li></ol>
+    <p class="note">일반 챗봇은 달달 외운 학생, Gemini Notebook은 오픈북 시험 보는 학생입니다. 책이 엉터리면 답도 엉터리예요.</p>
+    <a class="labbtn" href="https://claude.ai/artifact/HTnHT3zBpsJRTgiUfEop6t" target="_blank" rel="noopener">멈춰 있는 단어 지도 열기</a>
+  </article>
+  <article class="prac tips" id="nbsetup">
+  <header class="ph"><span class="pno">먼저</span><div><h3>맞춤 설정 두 가지와 크레딧 아끼기</h3><p class="ptime">실습 1 시작 전에</p></div></header>
+  <div class="tw"><table class="gt">
+    <thead><tr><th>설정</th><th>어디서</th><th>무엇을</th></tr></thead>
+    <tbody>
+      <tr><td>채팅 맞춤 설정</td><td>채팅 창 오른쪽 위 설정(조절 아이콘)</td><td>대화 목표 '기본 / 학습 가이드 / 맞춤', 응답 길이 '기본 / 길게 / 짧게'. '맞춤'에 역할과 규칙을 적으면 그 노트북의 모든 답에 적용됩니다.</td></tr>
+      <tr><td>스튜디오 맞춤 설정</td><td>스튜디오 버튼 오른쪽 연필 아이콘</td><td>형식, 언어, 길이·개수·난이도, 집중할 내용. 그냥 누르면 기본값으로 바로 만들어집니다.</td></tr>
+      <tr><td>소스 선택</td><td>소스 목록 체크박스</td><td>체크한 소스만 쓰입니다. 만들기 전에 켜진 소스를 확인합니다.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note"><b>크레딧 아끼기:</b> 학생은 실습마다 스튜디오 결과물을 <b>1개만</b> 만듭니다. 한 번 만들 때 연필 설정을 제대로 넣으면 다시 만들 일이 줄어듭니다. 자동 라벨, 웹 탐색, 계산, 포스터 이미지는 채팅과 소스 패널에서 합니다.</p>
+</article>
+  <article class="prac" id="nb1">
+  <header class="ph"><span class="pno">실습 1</span><div><h3>중간고사 대비 과목별 노트북</h3><p class="ptime">교육내용 1 · 자동 라벨, 웹 탐색, 소스 선택</p></div></header>
+  <p class="goal"><b>목표</b> 과목 자료 10개를 한 노트북에 넣고, 라벨과 소스 선택으로 과목이 섞이지 않게 묻고, 공식 웹 자료 1개를 더합니다.</p>
+  <div class="outcome"><span class="olab">대표 결과물</span><b>마인드맵</b><span>과목별로 나뉜 소스 구조가 한눈에 보이고 생성이 빠릅니다.</span></div><p class="hint"><b>공감 포인트</b> 과목 자료를 한 폴더에 몰아 넣었더니 다른 과목 내용이 섞여 나오는 시험 기간</p><h4 class="sub">실습 자료</h4><div class="file zip">
+  <div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>과목 자료 10개</b><span>실습1_과목별노트북.zip · 15KB · 압축을 풀고 10개를 모두 [파일 업로드]</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="p1" data-fn="실습1_과목별노트북.zip">한 번에 내려받기</button></div>
+  <p class="dlmsg" aria-live="polite"></p>
+</div><details class="flist"><summary>들어 있는 파일 보기</summary><ul><li>경영학원론 강의계획서 · 중간고사 기출 2025 · 강의슬라이드 핵심요약</li><li>공학수학1 강의계획서 · 과제1 안내문 · 중간고사 기출 2024</li><li>대학영어 강의계획서 · 발표 과제공지</li><li>대학글쓰기 기말과제 안내</li><li>기출족보 시험정보 모음 (출처 불명, 일부러 넣은 자료)</li></ul></details><h4 class="sub">채팅 맞춤 설정</h4><div class="crow set"><span class="clab">맞춤<small>대화 목표 &#x27;맞춤&#x27; · 응답 길이 &#x27;기본&#x27;</small></span><pre>너는 부산대 1~2학년의 시험 공부를 돕는 학습 조교야.
+1. 반드시 체크된 소스만 근거로 답하고, 문장마다 인용을 달아.
+2. 답의 첫 줄에 어느 과목 이야기인지 과목명을 밝혀.
+3. 소스에 없는 내용은 추측하지 말고 &quot;자료에 없음&quot;이라고 답해.
+4. 작성자·날짜가 없는 자료를 인용할 때는 &quot;출처 확인 필요&quot;라고 표시해.</pre><button type="button" class="copy">복사</button></div><h4 class="sub">따라 하기</h4><ol class="flow"><li><b>자동 라벨</b> 새 노트북에 10개를 올리고 과목별 라벨이 자동으로 생기는지 확인합니다.</li><li><b>소스 고르기</b> 라벨을 모두 켠 채 아래 '시험 범위 표'를 묻고, '경영학원론' 라벨만 켜고 다시 물어 비교합니다. 출처 불명인 <code>10_기출족보_시험정보_모음</code>은 체크 해제합니다.</li><li><b>웹 탐색</b> 소스 검색창에 아래 검색어를 넣고 빠른 탐색을 실행합니다. 결과 중 <b>부산대 공식 페이지 1개만</b> 가져옵니다.</li><li><b>마인드맵</b> '경영학원론' 라벨만 켜고 스튜디오의 [마인드맵]을 누릅니다. 가장 낯선 가지를 누르면 그 주제로 바로 질문할 수 있습니다.</li></ol><div class="grid"><article class="pc"><header><h4>시험 범위 표</h4><span class="when">채팅</span></header><pre>중간고사 시험 범위와 교수님이 강조한 핵심 개념을 과목별 표로 요약해 줘.</pre><button type="button" class="copy">복사</button></article><article class="pc"><header><h4>웹 탐색 검색어</h4><span class="when">소스 검색창 · 빠른 탐색</span></header><pre>부산대학교 2026학년도 2학기 학사일정 중간고사 기간</pre><button type="button" class="copy">복사</button></article></div><div class="result"><h4>결과 확인: 이렇게 나오면 성공</h4><ul><li>라벨 이름이 과목명(경영학원론, 공학수학1 등)으로 묶인다.</li><li>한 과목만 켰을 때 다른 과목 내용이 답에서 빠진다.</li><li>웹에서 가져온 소스 주소가 pusan.ac.kr 공식 페이지다.</li><li>마인드맵에 경영학원론 개념만 있다.</li></ul></div>
+</article>
+  <article class="prac" id="nb2">
+  <header class="ph"><span class="pno">실습 2</span><div><h3>강의자료·논문 빠르게 읽기</h3><p class="ptime">교육내용 2 · 요약, 질문, 인용 확인</p></div></header>
+  <p class="goal"><b>목표</b> 강의자료와 실제 논문을 올려 핵심만 빠르게 뽑고, 인용 번호로 원문을 대조합니다.</p>
+  <div class="outcome"><span class="olab">대표 결과물</span><b>보고서 (브리핑 문서)</b><span>긴 논문을 1~2쪽으로 줄이고, 인용으로 원문과 대조할 수 있습니다.</span></div><p class="hint"><b>공감 포인트</b> 과제 때문에 읽어야 하는 논문 20쪽, 강의자료 50장</p><h4 class="sub">실습 자료</h4><div class="file">
+  <div class="fhead"><span class="ficon" aria-hidden="true">MD</span><div class="fmeta"><b>샘플 강의자료: 행동경제학 3주차</b><span>01_샘플_강의자료_행동경제학_3주차.md · 파일 업로드로 추가</span></div></div>
+  <div class="fbtns"><button type="button" class="dlbtn" data-fn="01_샘플_강의자료_행동경제학_3주차.md">파일 내려받기</button><button type="button" class="copy">내용 복사</button></div>
+  <details><summary>내용 미리보기</summary><pre># 행동경제학 입문 3주차: 손실 회피, 프레이밍, 현재 편향 (실습용 샘플 강의자료)
+
+※ 실습용으로 정리한 요약 강의 노트입니다. 자기 과목 자료가 없는 학생은 이 자료를 소스로 사용하세요.
+
+## 1. 전통 경제학과 행동경제학
+전통 경제학은 사람이 모든 정보를 고려해 자기 효용을 최대화하는 합리적 선택을 한다고 가정한다. 행동경제학은 실제 사람이 제한된 주의력과 감정, 습관 때문에 이 가정에서 체계적으로 벗어난다는 점에 주목한다. 이런 체계적 이탈을 &#x27;편향(bias)&#x27;이라고 부른다.
+
+## 2. 손실 회피 (Loss Aversion)
+카너먼과 트버스키의 전망 이론(Prospect Theory, 1979)에 따르면 사람은 같은 크기의 이득보다 손실을 약 2배 정도 크게 느낀다. 예를 들어 1만원을 잃는 고통은 1만원을 얻는 기쁨보다 크다.
+- 예시: &quot;이번 주까지 신청하지 않으면 장학금 50만원을 잃습니다&quot;라는 안내가 &quot;신청하면 50만원을 받습니다&quot;보다 신청률이 높게 나타나는 경향이 있다.
+- 관련 개념: 보유 효과(Endowment Effect). 내가 가진 물건을 더 높게 평가하는 경향. 중고거래에서 판매자가 부르는 가격이 구매자가 생각하는 가격보다 높은 이유 중 하나다.
+
+## 3. 프레이밍 효과 (Framing Effect)
+같은 정보라도 어떻게 표현하느냐에 따라 선택이 달라진다.
+- 예시: &quot;수술 성공률 90%&quot;와 &quot;수술 사망률 10%&quot;는 같은 정보지만 앞의 표현에서 수술을 선택하는 비율이 더 높다.
+- 학생 생활 예시: &quot;학식 5,500원&quot;보다 &quot;배달 대비 1끼 1만원 절약&quot;이라고 말하면 학식을 고르는 사람이 늘 수 있다.
+
+## 4. 현재 편향 (Present Bias)과 쌍곡형 할인
+사람은 미래의 큰 보상보다 지금의 작은 보상을 지나치게 선호한다. 그래서 &quot;시험 공부는 내일부터&quot;라는 계획이 반복된다.
+- 해결 전략: 약속 장치(Commitment Device). 미리 스스로를 묶어두는 장치. 예: 스터디 그룹 벌금, 앱 사용 시간 제한, 자동 적금.
+
+## 5. 넛지 (Nudge)
+탈러와 선스타인(2008)은 선택을 금지하지 않으면서 더 나은 선택을 쉽게 만드는 설계를 &#x27;넛지&#x27;라고 불렀다.
+- 예시: 퇴직연금 자동 가입(기본값 효과), 학생식당에서 과일을 계산대 앞에 배치하기.
+- 비판: 설계자의 의도가 늘 선하다는 보장이 없다는 점, 개인의 자율성을 침해할 수 있다는 점.
+
+## 6. 이번 주 핵심 정리
+1. 사람은 손실을 이득보다 약 2배 크게 느낀다 (손실 회피).
+2. 같은 정보도 표현 방식에 따라 선택이 바뀐다 (프레이밍).
+3. 사람은 지금의 작은 보상을 과대평가한다 (현재 편향).
+4. 넛지는 선택의 자유를 유지하면서 행동을 바꾸는 설계다.
+
+## 생각해볼 질문
+- 내가 최근에 손실 회피 때문에 내린 결정은 무엇인가?
+- 우리 학교 장학금 안내문을 프레이밍 효과를 이용해 다시 쓴다면 어떻게 쓸 수 있을까?</pre></details>
+  <p class="dlmsg" aria-live="polite"></p>
+</div><div class="file paper">
+  <div class="fhead"><span class="ficon" aria-hidden="true">PDF</span><div class="fmeta"><b>오의경 (2025). 대학생의 AI 활용 특성과 인식 분석</b><span>한국문헌정보학회지 59(1), 671-692 · CC BY-NC-ND 4.0 · 실제 공개 논문</span></div></div>
+  <div class="fbtns"><a class="lbtn" href="https://www.accesson.kr/kslis/assets/pdf/47458/journal-59-1-671.pdf" target="_blank" rel="noopener">원문 PDF 열기</a><a class="lbtn ghost" href="https://doi.org/10.4275/KSLIS.2025.59.1.671" target="_blank" rel="noopener">DOI 페이지</a></div>
+  <p class="hint">PDF를 내려받아 [파일 업로드]로 올리세요. 대학생이 과제·시험 준비에 AI를 어떻게 쓰고, 정보 신뢰성을 어떻게 보는지 다룬 설문 연구입니다.</p>
+</div><h4 class="sub">채팅 맞춤 설정</h4><div class="crow set"><span class="clab">맞춤<small>대화 목표 &#x27;맞춤&#x27; · 응답 길이 &#x27;길게&#x27;</small></span><pre>너는 논문을 처음 읽는 대학생을 돕는 연구 조교야.
+1. 전문 용어는 처음 나올 때 괄호 안에 쉬운 말로 풀어 줘.
+2. 숫자(응답자 수, 비율, 평균)는 원문 표의 값 그대로 쓰고 인용을 달아.
+3. 논문 내용과 너의 해석을 &quot;논문 내용:&quot;, &quot;해석:&quot;으로 나눠 써.
+4. 소스에 없는 내용은 &quot;자료에 없음&quot;이라고 답해.</pre><button type="button" class="copy">복사</button></div><h4 class="sub">따라 하기</h4><ol class="flow"><li>새 노트북에 강의자료와 논문 PDF를 올리고, 소스를 눌러 자동 요약(소스 가이드)을 먼저 읽습니다.</li><li>'핵심 개념 표'와 '환각 확인'을 차례로 묻습니다. 자료에 없는 '앵커링 효과'에 "자료에 없음"이라고 답하면 성공입니다.</li><li><b>브리핑 문서</b> 논문만 체크 → 스튜디오 [보고서] 연필 아이콘 → 형식 '브리핑 문서', 한국어 → 설명 칸에 아래 문장을 넣고 만듭니다.</li><li>브리핑 문서의 숫자 2개를 인용 번호로 눌러 원문 표와 대조합니다. <b>이 노트북은 실습 3에서 그대로 씁니다.</b></li></ol><div class="grid"><article class="pc"><header><h4>핵심 개념 표</h4><span class="when">채팅</span></header><pre>이 강의자료의 핵심 개념 5개를 정의, 예시, 시험에 나올 만한 포인트 열로 표로 정리해 줘.</pre><button type="button" class="copy">복사</button></article><article class="pc"><header><h4>환각 확인</h4><span class="when">채팅</span></header><pre>이 자료에서 &#x27;앵커링 효과&#x27;는 어떻게 설명돼 있어?</pre><button type="button" class="copy">복사</button></article><article class="pc"><header><h4>브리핑 문서 설명 칸</h4><span class="when">스튜디오 → 보고서 → 연필 · 형식 &#x27;브리핑 문서&#x27;</span></header><pre>이 논문을 교수님께 5분 안에 보고한다고 생각하고 브리핑 문서를 써 줘.
+연구 질문, 연구 대상과 방법, 핵심 결과 5개(수치는 원문 그대로), 한계,
+대학생이 AI를 쓸 때 주는 시사점 3가지 순서로 써 줘.</pre><button type="button" class="copy">복사</button></article></div><div class="result"><h4>결과 확인: 이렇게 나오면 성공</h4><ul><li>'앵커링 효과'에 "자료에 없음"으로 답한다 (지어내면 환각).</li><li>브리핑 문서가 연구 질문 → 방법 → 결과 → 한계 → 시사점 순서로 나온다.</li><li>브리핑 문서의 응답자 수와 비율이 논문 원문 표와 같다.</li></ul></div>
+</article>
+  <article class="prac" id="nb3">
+  <header class="ph"><span class="pno">실습 3</span><div><h3>시험 대비 복습 세트</h3><p class="ptime">교육내용 4 · 퀴즈 + 강사 오디오 시연</p></div></header>
+  <p class="goal"><b>목표</b> 실습 2 노트북을 그대로 열어 퀴즈를 만들어 풀고, 강사가 미리 만든 오디오 개요를 함께 듣습니다.</p>
+  <div class="outcome"><span class="olab">대표 결과물</span><b>퀴즈</b><span>바로 풀고 채점까지 돼서 학생 반응이 가장 좋습니다.</span></div><p class="hint"><b>공감 포인트</b> 시험 전날 무엇을 모르는지 모르는 상태. 새 소스는 없습니다. 실습 2 노트북(강의자료 + 논문 둘 다 체크)을 그대로 씁니다.</p><h4 class="sub">따라 하기</h4><ol class="flow"><li>스튜디오 [퀴즈] 연필 아이콘 → 문항 수 '적게', 난이도 '어려움' → 주제 칸에 아래 문장을 넣고 만듭니다.</li><li>퀴즈를 풀고, 틀린 문제는 채팅에 '근거 찾기'를 붙여 소스에서 확인합니다.</li><li>강사 화면의 <b>AI 오디오 오버뷰</b>를 잠깐 함께 듣습니다. 마지막 'AI를 과제에 쓸 때 지킬 점'이 마무리 이야기로 이어집니다.</li></ol><div class="grid"><article class="pc"><header><h4>퀴즈 주제 칸</h4><span class="when">스튜디오 → 퀴즈 → 연필 · 적게 · 어려움</span></header><pre>중간고사 대비. 단순 암기보다 개념을 새로운 상황에 적용하는 문제 위주로.
+행동경제학 개념과 논문 결과를 섞어서 내고, 오답마다 왜 틀렸는지 해설을 붙여 줘.</pre><button type="button" class="copy">복사</button></article><article class="pc"><header><h4>근거 찾기</h4><span class="when">채팅</span></header><pre>이 문제의 정답 근거를 소스에서 찾아 인용해 줘.</pre><button type="button" class="copy">복사</button></article><article class="pc"><header><h4>강사용: 오디오 오버뷰</h4><span class="when">수업 전에 미리 생성 · 형식 &#x27;토론&#x27; · 길이 &#x27;짧게&#x27;</span></header><pre>부산대 학생 두 명이 이 논문의 결과를 자기 AI 사용 경험과 비교하며 토론하는 형식으로 해 줘.
+한 명은 AI를 과제에 적극적으로 쓰는 학생, 다른 한 명은 정보 신뢰성을 걱정하는 학생이야.
+마지막은 과제에 AI를 쓸 때 지켜야 할 점 3가지로 정리해 줘.</pre><button type="button" class="copy">복사</button></article></div><div class="result"><h4>결과 확인</h4><ul><li>퀴즈가 암기형이 아니라 상황 적용형 문제로 나온다.</li><li>오답 해설이 소스 내용과 맞고, 근거를 물으면 인용이 달린다.</li><li>복습 세트 완성: 실습 1 마인드맵 + 실습 3 퀴즈 + 강사 오디오 개요.</li></ul></div>
+</article>
+  
+  <article class="prac" id="nb4">
+  <header class="ph"><span class="pno">실습 4</span><div><h3>장학금·청년 정책·자취 생활비 비교</h3><p class="ptime">교육내용 3 · 데이터 분석, 데이터 표</p></div></header>
+  <p class="goal"><b>목표</b> 공고문 6건과 생활비 자료를 한 노트북에 넣고, 계산은 채팅으로, 비교는 데이터 표로 정리합니다.</p>
+  <div class="outcome"><span class="olab">대표 결과물</span><b>데이터 표</b><span>교육내용 3의 &#x27;데이터 표로 비교&#x27;와 정확히 맞고, Google Sheets로 내보낼 수 있습니다.</span></div><p class="hint"><b>공감 포인트</b> 몰라서 못 받는 지원금, 매달 나가는 월세와 관리비. 모두 실습용 가상 자료입니다.</p><h4 class="sub">실습 자료</h4><div class="file">
+  <div class="fhead"><span class="ficon" aria-hidden="true">MD</span><div class="fmeta"><b>장학·지원 공고문 6건 (가상)</b><span>01_장학_지원_공고문_가상.md · 파일 업로드로 추가</span></div></div>
+  <div class="fbtns"><button type="button" class="dlbtn" data-fn="01_장학_지원_공고문_가상.md">파일 내려받기</button><button type="button" class="copy">내용 복사</button></div>
+  <details><summary>내용 미리보기</summary><pre># 실습용 장학·지원 공고문 모음 (가상)
+
+※ 이 자료는 수업 실습을 위해 만든 가상 공고문입니다. 제도 이름, 금액, 기간은 실제와 다릅니다. 실제 신청은 반드시 공식 공고를 확인하세요.
+
+## 공고 1. 효원 성적우수 장학금 (교내, 가상)
+- 지원 내용: 다음 학기 등록금의 50% 감면
+- 자격: 직전 학기 15학점 이상 이수, 평점평균 3.8 이상, 학부 재학생
+- 선발 인원: 학과별 상위 5%
+- 신청 기간: 2027년 1월 5일 ~ 1월 16일
+- 제출 서류: 장학금 신청서, 직전 학기 성적증명서
+- 유의 사항: 다른 교내 성적장학금과 중복 수혜 불가. 국가장학금과는 등록금 범위 안에서 중복 가능.
+
+## 공고 2. 효원 생활비 지원 장학금 (교내, 가상)
+- 지원 내용: 월 30만원, 4개월 (총 120만원)
+- 자격: 학자금 지원구간 0~6구간, 직전 학기 12학점 이상 이수, 평점평균 2.5 이상
+- 의무 사항: 학기 중 교내 봉사 또는 멘토링 20시간 참여
+- 신청 기간: 2027년 2월 2일 ~ 2월 13일
+- 제출 서류: 신청서, 학자금 지원구간 통지서, 자기소개서(1,000자)
+- 유의 사항: 교외 생활비 장학금과 중복 시 합산 월 50만원까지만 지급
+
+## 공고 3. 부산 청년 월세 지원 (지자체, 가상)
+- 지원 내용: 월 최대 20만원, 최대 12개월
+- 자격: 부산시에 주민등록을 둔 만 19~34세 무주택 청년, 원가구 소득 기준 중위소득 100% 이하, 본인 소득 중위소득 60% 이하
+- 주택 조건: 임차보증금 5,000만원 이하, 월세 60만원 이하
+- 신청 기간: 2027년 3월 1일 ~ 3월 31일 (온라인)
+- 제출 서류: 임대차계약서, 주민등록등본, 월세 이체 내역 3개월, 소득 증빙
+- 유의 사항: 국토교통부 청년 월세 지원과 중복 수혜 불가
+
+## 공고 4. 부산 청년 교통비 환급 (지자체, 가상)
+- 지원 내용: 대중교통 이용요금의 30% 환급, 월 최대 4만 5천원
+- 자격: 부산시 거주 만 19~34세, 월 15회 이상 대중교통 이용
+- 신청 기간: 상시 (분기별 정산)
+- 제출 서류: 교통카드 등록, 본인 인증
+- 유의 사항: 다른 교통비 환급 제도와 중복 시 환급률이 높은 제도 하나만 적용
+
+## 공고 5. 지역인재 생활비 무이자 대출 (재단, 가상)
+- 지원 내용: 학기당 생활비 최대 150만원 무이자 대출, 졸업 후 2년 거치 5년 상환
+- 자격: 부산 소재 대학 재학생, 학자금 지원구간 0~8구간
+- 신청 기간: 2027년 1월 20일 ~ 2월 20일
+- 제출 서류: 대출 신청서, 재학증명서, 학자금 지원구간 통지서
+- 유의 사항: 대출이므로 상환 의무가 있음. 연체 시 이자 발생
+
+## 공고 6. 첫 자취 정착 지원 바우처 (구청, 가상)
+- 지원 내용: 이사비·생활용품 구입용 바우처 1회 30만원
+- 자격: 최근 6개월 안에 해당 구로 전입한 대학생, 1인 가구
+- 신청 기간: 2027년 4월 1일 ~ 4월 30일, 선착순 500명
+- 제출 서류: 주민등록등본, 재학증명서, 임대차계약서
+- 유의 사항: 기숙사 거주자는 대상 아님</pre></details>
+  <p class="dlmsg" aria-live="polite"></p>
+</div><div class="file">
+  <div class="fhead"><span class="ficon" aria-hidden="true">CSV</span><div class="fmeta"><b>자취 주거 형태별 생활비 비교 (가상, CSV)</b><span>02_자취_주거_생활비_비교_가상.csv · 파일 업로드로 추가</span></div></div>
+  <div class="fbtns"><button type="button" class="dlbtn" data-fn="02_자취_주거_생활비_비교_가상.csv">파일 내려받기</button><button type="button" class="copy">내용 복사</button></div>
+  <details><summary>내용 미리보기</summary><pre>유형,위치,보증금(만원),월세(만원),관리비(만원),월 식비(만원),월 통신비(만원),월 교통비(만원),통학 시간(분),비고
+원룸 A,장전동 정문 근처,300,38,7,40,5,0,5,풀옵션 신축
+원룸 B,장전동 언덕 위,500,33,5,40,5,0,15,옵션 일부
+원룸 C,온천장역 근처,1000,30,6,40,5,6,25,지하철 1정거장
+셰어하우스,부곡동,100,30,5,35,5,6,20,주방·거실 공용 4인
+하숙,장전동,50,55,0,10,5,0,10,아침·저녁 식사 포함
+기숙사 2인실,교내,0,24,0,35,5,0,5,학기 단위 납부 월 환산 / 방학 중 별도</pre></details>
+  <p class="dlmsg" aria-live="polite"></p>
+</div><h4 class="sub">채팅 맞춤 설정</h4><div class="crow set"><span class="clab">맞춤<small>대화 목표 &#x27;맞춤&#x27; · 응답 길이 &#x27;기본&#x27;</small></span><pre>너는 부산대 학생지원센터에서 장학금과 주거비를 상담하는 상담원이야.
+1. 금액, 신청 기간, 자격 요건은 소스에 적힌 값 그대로 쓰고 인용을 달아.
+2. 계산할 때는 계산식을 함께 보여 줘.
+3. 소스에 없는 정보는 &quot;확인 필요&quot;로 표시하고, 한국장학재단·온통청년·부산청년플랫폼 공식 공고 확인을 권해.</pre><button type="button" class="copy">복사</button></div><h4 class="sub">따라 하기</h4><ol class="flow"><li>새 노트북에 두 파일을 올리고 맞춤 설정을 넣습니다.</li><li><b>데이터 분석</b> '월 고정비 계산'을 채팅으로 물어 계산식과 추천을 받습니다.</li><li><b>데이터 표</b> 공고문만 체크 → 스튜디오 [데이터 표] 연필 아이콘 → 설명 칸에 아래 문장을 넣습니다. 조건은 내 상황으로 바꿔도 됩니다.</li><li>완성된 표를 Google Sheets로 내보내 '나의 해당 여부'로 필터를 걸어 봅니다.</li></ol><div class="grid"><article class="pc"><header><h4>월 고정비 계산</h4><span class="when">채팅 (데이터 분석)</span></header><pre>주거 형태별로 보증금을 뺀 월 고정비(월세+관리비+공과금+통신비) 합계를 계산해서 표로 보여 주고, 통학 시간까지 고려해 &#x27;돈 아끼기 1순위&#x27;와 &#x27;시간 아끼기 1순위&#x27;를 하나씩 추천해 줘.</pre><button type="button" class="copy">복사</button></article><article class="pc"><header><h4>데이터 표 설명 칸</h4><span class="when">스튜디오 → 데이터 표 → 연필</span></header><pre>장학·지원 제도 비교표를 만들어 줘.
+열: 제도명, 지원 내용, 금액, 자격 요건, 신청 기간, 필요 서류, 중복 수혜 제한, 나의 해당 여부.
+나의 조건은 부산 거주 3학년, 학자금 지원구간 5구간, 직전 학기 평점 3.6, 장전동 원룸 자취.
+소스에 없는 칸은 &quot;확인 필요&quot;로 적어 줘.</pre><button type="button" class="copy">복사</button></article></div><div class="result"><h4>결과 확인: 이렇게 나오면 성공</h4><ul><li>표의 금액·마감일이 공고 원문과 같다 (인용 2개 대조).</li><li>소스에 없는 칸이 '확인 필요'로 표시된다.</li><li>월 고정비 계산 한 줄을 손으로 검산해도 같다.</li><li>실제 신청 전에는 한국장학재단·온통청년·부산청년플랫폼·마이홈포털 공식 공고를 확인한다.</li></ul></div>
+</article>
+  <article class="prac" id="nb5">
+  <header class="ph"><span class="pno">실습 5</span><div><h3>축제 포스터 만들고 발표 자료에 넣기</h3><p class="ptime">교육내용 4 + 추가 · 이미지 생성, 슬라이드</p></div></header>
+  <p class="goal"><b>목표</b> 기존 포스터를 샘플로 새 포스터를 만들고, 그 포스터를 표지로 넣어 팀플 발표 슬라이드(PPTX)를 만듭니다.</p>
+  <div class="outcome"><span class="olab">대표 결과물</span><b>슬라이드 자료 (PPTX)</b><span>직접 만든 포스터가 표지로 들어가 결과물이 이어집니다.</span></div><p class="hint"><b>공감 포인트</b> 축제·동아리 홍보물과 팀플 발표 자료를 매번 처음부터 만드는 부담</p><h4 class="sub">실습 자료</h4><div class="thumbs"><figure><img src="files/thumb_poster_tpl.jpg" alt="샘플: 기존 효원 가을 대동제 포스터" loading="lazy" width="260"><figcaption>샘플: 기존 효원 가을 대동제 포스터</figcaption></figure><figure><img src="files/thumb_poster_ex.jpg" alt="예시 결과: 효원 봄 버스킹 대동제" loading="lazy" width="260"><figcaption>예시 결과: 효원 봄 버스킹 대동제</figcaption></figure></div><div class="file zip">
+  <div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>포스터 템플릿 + 예시 결과 + 상권 팀플 요약문 + 참고 상권자료 3개</b><span>실습5_포스터_발표자료.zip · 5.3MB · 포스터 템플릿과 요약문을 [파일 업로드]</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="p5" data-fn="실습5_포스터_발표자료.zip">한 번에 내려받기</button></div>
+  <p class="dlmsg" aria-live="polite"></p>
+</div><div class="file">
+  <div class="fhead"><span class="ficon" aria-hidden="true">MD</span><div class="fmeta"><b>상권 팀플 주제 요약문</b><span>03_상권팀플_주제_요약문.md · 슬라이드 소스로 업로드</span></div></div>
+  <div class="fbtns"><button type="button" class="dlbtn" data-fn="03_상권팀플_주제_요약문.md">파일 내려받기</button><button type="button" class="copy">내용 복사</button></div>
+  <details><summary>내용 미리보기</summary><pre># 팀플 주제 요약문: 부산대 정문·북문 상권 활성화 방안
+
+&gt; ⚠️ 실습용 가상 자료입니다. 인물·통계·설문 수치는 모두 실습을 위해 만든 가상 데이터입니다.
+
+## 팀 정보
+- 수업명: 경영학원론 (2026-1학기)
+- 팀명: 효원상권연구팀 (조원 4명: 김민준, 이서연, 박지훈, 최하은)
+- 발표 시간: 10분 (파워포인트 10장 기준)
+
+## 1. 발표 주제 및 목적
+- 주제: 부산대 정문·북문 상권의 매출 감소 원인 분석과 대학생 소비 패턴 기반 활성화 방안 제안
+- 목적: 강의에서 배운 시장 세분화·경쟁 우위 이론을 실제 대학가 상권 사례에 적용해 보는 것
+
+## 2. 문제 정의
+- 최근 3년간 정문 상권 폐업 점포 증가 (2023년 12곳 → 2025년 41곳, 가상 데이터)
+- 북문 상권 매출 감소율 -18% (전년 대비, 가상 데이터)
+- 유입 인구는 유지되지만 1인당 체류 시간이 52분 → 31분으로 감소 (가상 설문 데이터)
+
+## 3. 조사 방법
+- 재학생 120명 대상 온라인 설문 (2026년 10월, 가상 데이터)
+- 정문·북문 점포 28곳 현장 방문 인터뷰
+- 지역 상권 통계 자료 검토 (부산시 소상공인 현황 자료 참고)
+
+## 4. 재학생 설문 결과 (1)
+- &quot;학교 앞보다 서면·센텀시티로 외식하러 감&quot; 응답 63%
+- 이동 이유 1순위: 메뉴 다양성(41%), 2순위: 매장 분위기(27%), 3순위: 가격(19%)
+- 월평균 교외 소비액: 84,000원 vs 교내 상권 소비액: 41,000원
+
+## 5. 재학생 설문 결과 (2)
+- 정문 상권에 있으면 좋겠는 업종 1위: 카페(38%), 2위: 저녁 늦게까지 영업하는 식당(26%)
+- 스터디카페 부족 체감 응답 57%
+- &quot;시험 기간에 새벽에 공부할 곳이 없다&quot; 응답 71%
+
+## 6. 점주 인터뷰 결과
+- 공통 어려움: 인건비 상승(22%), 배달 수수료 부담(35%), 재학생 유동 인구 감소(28%)
+- 정문 점주: &quot;주말·방학 매출이 평일의 절반 이하로 떨어진다&quot;
+- 북문 점주: &quot;체인 카페가 들어오면서 개인 카페 생존이 어렵다&quot;
+
+## 7. 경쟁 상권 비교 분석
+- 서면: 교통 접근성과 규모의 경제 우위, 대형 프랜차이즈 중심
+- 센텀시티: 직장인 수요 기반, 저녁 심야 시장 강세
+- 부산대 정문·북문: 낮은 임대료와 고정 학생 수요가 강점이나 공휴일·방학 리스크 존재
+
+## 8. 활성화 제안 1: 야간 스터디존 조성
+- 기존 카페·식당과 협력해 시험 기간 24시간 좌석 운영 지원
+- 대학과 상인회가 함께 &#x27;효원 야간 스터디 맵&#x27; 제작·홍보
+- 예상 효과: 시험 기간 상권 체류 시간 31분 → 50분 이상 회복 목표
+
+## 9. 활성화 제안 2·3
+- 제안 2: 방학 기간 재학생·지역주민 대상 &#x27;효원 로컬 페스티벌&#x27; 연계 (대동제 시즌 외 수요 창출)
+- 제안 3: 상인회 공통 배달 플랫폼 구축으로 배달 수수료 부담 절감 (건당 3.5%p 절감, 가상 계산)
+- 기대 효과: 점주 3년 생존율 향상, 재학생 월 교외 소비액 20% 이상 교내 상권 회유 목표
+
+## 10. 결론 및 역할 분담
+- 결론: 부산대 상권의 핵심 문제는 &#x27;수요 부족&#x27;이 아니라 &#x27;체류 시간과 야간·비시즌 수요&#x27;의 부재
+- 역할 분담: 자료 조사(김민준), 설문·분석(이서연), 제안안 작성(박지훈), PPT 제작·발표(최하은)
+- 일정: 11월 25일 중간 보고 → 12월 9일 최종 발표
+
+---
+
+### 이 파일의 활용법 (실습 6 안내)
+1. 이 요약문을 노트(채팅)에 첨부하거나 소스로 등록합니다.
+2. 치트시트의 프롬프트를 입력합니다:
+   &gt; &quot;다음 내용을 기반으로 파워포인트 파일(pptx)을 생성해 주세요. 대상은 전공 수업을 함께 듣는 부산대 학우들입니다. 단순 텍스트 복사가 아니라 각 슬라이드의 학습 목적과 핵심 메시지를 요약하여 시각적으로 구성해 주세요. 총 10장의 슬라이드로 제작합니다.&quot;
+3. 완성된 .pptx에서 텍스트 상자·폰트가 직접 수정 가능한지 확인합니다.
+</pre></details>
+  <p class="dlmsg" aria-live="polite"></p>
+</div><details class="flist"><summary>이공계 반 선택: 실험 사진 4장으로 안전 가이드 슬라이드</summary><div class="thumbs"><figure><img src="files/thumb_lab1.jpg" alt="① 보호구 착용" loading="lazy" width="260"><figcaption>① 보호구 착용</figcaption></figure><figure><img src="files/thumb_lab2.jpg" alt="② 시약 계량" loading="lazy" width="260"><figcaption>② 시약 계량</figcaption></figure><figure><img src="files/thumb_lab3.jpg" alt="③ 장치 조립" loading="lazy" width="260"><figcaption>③ 장치 조립</figcaption></figure><figure><img src="files/thumb_lab4.jpg" alt="④ 폐기물 분리" loading="lazy" width="260"><figcaption>④ 폐기물 분리</figcaption></figure></div><div class="file zip">
+  <div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>실험 사진 4장 (AI 생성 이미지)</b><span>실습5_선택_실험사진.zip · 8.2MB · 단계 2에서 요약문 대신 올리기</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="p5lab" data-fn="실습5_선택_실험사진.zip">한 번에 내려받기</button></div>
+  <p class="dlmsg" aria-live="polite"></p>
+</div><div class="crow"><span class="clab">설명 칸</span><pre>새내기를 위한 실험실 안전 수칙과 단계별 프로토콜 가이드. 슬라이드마다 해당 사진을 넣고 주의할 점을 짚어 줘. 사진 순서는 보호구 착용 → 시약 계량 → 장치 조립 → 폐기물 분리.</pre><button type="button" class="copy">복사</button></div></details><h4 class="sub">단계 1. 샘플 이미지로 새 포스터 (채팅)</h4><div class="crow set"><span class="clab">맞춤<small>대화 목표 &#x27;맞춤&#x27;</small></span><pre>너는 부산대 총학생회 홍보 디자이너야.
+기존 포스터의 레이아웃, 색감, 분위기는 유지하고 지정한 행사 정보만 바꿔.
+한글은 크고 또렷하게, 날짜·장소·행사명은 철자 하나도 틀리지 않게 넣어.</pre><button type="button" class="copy">복사</button></div><ol class="flow"><li>새 노트북에 포스터 템플릿 PNG와 요약문을 올리고 맞춤 설정을 넣습니다.</li><li>아래 '포스터 프롬프트'를 채팅에 넣습니다.</li><li>날짜·장소 오타를 예시 결과와 비교하고, 마음에 들면 내려받아 <b>이 노트북 소스로 다시 올립니다</b>.</li></ol><div class="grid"><article class="pc"><header><h4>포스터 프롬프트</h4><span class="when">채팅</span></header><pre>업로드한 포스터를 바탕으로 2027년 5월 18일~20일, 부산대학교 넉넉한 터(넉터)에서 열리는 &#x27;효원 봄 버스킹 대동제&#x27; 포스터를 만들어 줘.</pre><button type="button" class="copy">복사</button></article></div><h4 class="sub">단계 2. 슬라이드 자료 → PPTX</h4><ol class="flow"><li>요약문과 새 포스터만 체크 → 스튜디오 [슬라이드 자료] 연필 아이콘 → 형식 '발표자 슬라이드', 길이 '짧게', 한국어.</li><li>설명 칸에 아래 문장을 넣습니다. 단계별 만들기가 보이면 개요를 먼저 확인·수정한 뒤 생성합니다.</li><li>PPTX로 내려받아 PowerPoint에서 글자를 고칠 수 있는지 확인합니다. PPTX가 없으면 PDF나 Google Slides로 내보냅니다.</li></ol><div class="grid"><article class="pc"><header><h4>슬라이드 설명 칸</h4><span class="when">스튜디오 → 슬라이드 자료 → 연필</span></header><pre>부산대 정문·북문 상권 살리기 팀플 발표 자료. 청중은 전공 수업을 함께 듣는 학우들이야.
+장마다 핵심 메시지 한 줄을 제목으로 먼저 쓰고, 글은 3줄 이내로.
+표지에는 업로드한 축제 포스터 이미지를 넣고, &#x27;대동제와 연계한 상권 이벤트&#x27; 아이디어로 마무리해 줘.</pre><button type="button" class="copy">복사</button></article></div><div class="result"><h4>결과 확인: 이렇게 나오면 성공</h4><ul><li>포스터의 날짜(2027년 5월 18일~20일)·장소(넉터)·행사명 글자가 정확하다. 한글 오타가 잦으니 꼭 확인합니다.</li><li>슬라이드 표지에 만든 포스터 이미지가 실제로 들어갔다.</li><li>장마다 제목이 핵심 메시지 한 줄이고, 본문이 3줄 이내다.</li><li>내려받은 PPTX에서 글자를 고칠 수 있다.</li></ul></div>
+</article>
+  <article class="prac tips" id="nbwrap">
+  <header class="ph"><span class="pno">마무리</span><div><h3>AI를 과제에 써도 될까 · 과제 안내</h3></div></header>
+  <div class="tw"><table class="gt"><thead><tr><th>지킬 것</th><th>이렇게</th></tr></thead><tbody>
+    <tr><td>허용 범위</td><td>수업마다 다르니 강의계획서와 교수님 안내를 먼저 확인합니다.</td></tr>
+    <tr><td>사용 표시</td><td>AI를 쓴 부분은 밝히고, 숫자와 인용은 반드시 원문에서 다시 확인합니다.</td></tr>
+    <tr><td>저작권</td><td>교수님 강의자료와 유료 교재는 개인 공부용 노트북에만 넣고 공유하지 않습니다.</td></tr>
+    <tr><td>개인정보</td><td>성적표, 학번, 실명, 연락처가 담긴 파일은 올리지 않습니다.</td></tr>
+  </tbody></table></div>
+  <p class="note"><b>오늘 만든 것:</b> 마인드맵, 브리핑 문서, 퀴즈, 데이터 표, 포스터, 슬라이드 (+ 강사 오디오 개요)<br><b>과제:</b> 이번 학기 내 과목 하나로 노트북을 만들고 퀴즈 1세트를 풀어 점수 화면을 캡처해 오기</p>
+  <h4 class="sub">선택 과제: 나머지 스튜디오 결과물 (집에서)</h4>
+  <div class="tw"><table class="gt"><thead><tr><th>결과물</th><th>쓸 노트북</th><th>연필 설정 / 설명 칸</th></tr></thead><tbody>
+    <tr><td>플래시카드</td><td>실습 2</td><td>카드 수 '표준', 난이도 '보통' / 앞면은 용어, 뒷면은 한 줄 정의와 대학생 일상 예시 한 줄</td></tr>
+    <tr><td>인포그래픽</td><td>실습 4</td><td>방향 '정사각형', 세부 '간결' / 이번 학기 내가 받을 수 있는 지원금을 금액 큰 순으로, 아래에 마감일 타임라인</td></tr>
+    <tr><td>동영상 개요</td><td>실습 2</td><td>형식 '간략히' / 시험 직전 3분 복습용. 헷갈리기 쉬운 개념 3쌍을 배달앱, 수강신청, 알바 예시로 비교</td></tr>
+    <tr><td>AI 오디오 오버뷰</td><td>내 과목 노트북</td><td>형식 '심층 분석' / 통학 시간에 들을 수 있게 이번 주 강의 핵심을 10분 안쪽으로</td></tr>
+  </tbody></table></div>
+</article>
+  <article class="prac tips" id="nbappx"><header class="ph"><span class="pno">부록</span><div><h3>수업 후 자습 자료</h3><p class="ptime">시간이 남거나 집에서</p></div></header><div class="zgrid"><div class="file zip">
+  <div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>A. 대동제 물품 엑셀</b><span>부록A_대동제_엑셀.zip · 314KB · 손글씨 재고 스캔본 + 기준표 + 업체 견적 → 수식이 들어간 xlsx (정답 총 229,300원)</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="A" data-fn="부록A_대동제_엑셀.zip">한 번에 내려받기</button></div>
+  <p class="dlmsg" aria-live="polite"></p>
+</div><div class="file zip">
+  <div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>B. 워드 지원서 자동 작성</b><span>부록B_워드_지원서.zip · 90KB · 가상 이력 docx + 지원서 양식 2종 → docx 자동 작성</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="B" data-fn="부록B_워드_지원서.zip">한 번에 내려받기</button></div>
+  <p class="dlmsg" aria-live="polite"></p>
+</div><div class="file zip">
+  <div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>C. 졸업요건 구버전 공지 걸러내기</b><span>부록C_졸업요건_구버전공지.zip · 454KB · PDF 7개 중 구버전 2개(04, 06)를 인용으로 찾아내기</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="C" data-fn="부록C_졸업요건_구버전공지.zip">한 번에 내려받기</button></div>
+  <p class="dlmsg" aria-live="polite"></p>
+</div><div class="file zip">
+  <div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>D. 부산 취업 자격요건 표</b><span>부록D_부산취업_자격요건.zip · 4KB · 청년정책·BIFC·IT 채용·공공기관·직무 자료 5개 → 자격요건 비교표</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="D" data-fn="부록D_부산취업_자격요건.zip">한 번에 내려받기</button></div>
+  <p class="dlmsg" aria-live="polite"></p>
+</div><div class="file zip">
+  <div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>E. 유튜브 강의로 복습</b><span>부록E_유튜브_복습.zip · 1KB · 공개 강의 영상 목록 → [소스 추가] → [YouTube]</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="E" data-fn="부록E_유튜브_복습.zip">한 번에 내려받기</button></div>
+  <p class="dlmsg" aria-live="polite"></p>
+</div></div></article>
+  <article class="prac tips" id="srcmgmt">
+  <header class="ph"><span class="pno">팁</span><div><h3>소스 관리 요령</h3><p class="ptime">모든 실습에 해당</p></div></header>
+  <div class="tw"><table class="gt">
+    <thead><tr><th>기능</th><th>이렇게 쓰세요</th></tr></thead>
+    <tbody>
+      <tr><td>선택·해제</td><td>체크박스로 "3주차 자료만" 골라 물으면 답이 정확해집니다.</td></tr>
+      <tr><td>라벨</td><td>소스가 5개 이상이면 자동으로 묶입니다. 주차별·종류별로 이름을 바꾸고 옮기세요.</td></tr>
+      <tr><td>제목</td><td>붙여넣은 텍스트는 <code>[3주차] 손실 회피 필기</code>처럼 주차를 앞에 붙이세요.</td></tr>
+      <tr><td>Drive 동기화</td><td>몇 분마다 자동 동기화. 원본 권한을 잃으면 그 소스는 답에서 빠집니다.</td></tr>
+      <tr><td>교체·삭제</td><td>이미 만든 퀴즈·오디오·슬라이드는 바뀌지 않으니 소스를 바꾼 뒤 다시 만드세요.</td></tr>
+      <tr><td>메모 → 소스</td><td>검증한 좋은 답변을 메모로 저장해 소스로 넣으면 다음 답의 근거가 됩니다.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="hint">한도: 소스 하나당 50만 단어 또는 200MB. 노트북당 소스 수는 무료 계정 50개이고 학교 계정은 더 많습니다. 접근할 수 없게 된 소스도 개수에 포함됩니다.</p>
+</article>
+</section>
+
+<section id="allfiles">
+  <p class="eyebrow">실습 자료</p>
+  <h2>실습 자료 한꺼번에 받기</h2>
+  <p class="lead">수업에 쓰는 자료를 모두 모았습니다. [전체 자료 받기]를 누르면 실습·부록 자료가 폴더별로 정리된 ZIP 하나로 내려받아집니다.</p>
+  <div class="file allpack"><div class="fhead"><span class="ficon" aria-hidden="true">ALL</span><div class="fmeta"><b>전체 자료 (스킬 + 실습 1~5 + 부록 A~E)</b><span>노트북실습자료_전체.zip · 파일 48개 · 약 16MB</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn big" data-pack="ALL" data-fn="노트북실습자료_전체.zip">전체 자료 받기</button></div><p class="dlmsg" aria-live="polite"></p></div>
+  <div class="tw"><table class="gt"><thead><tr><th>이럴 때</th><th>이렇게 하세요</th></tr></thead><tbody>
+    <tr><td>버튼을 눌러도 안 받아질 때</td><td>아래 묶음의 [안 받아질 때: 파일 하나씩 열기]를 펼쳐 파일 이름을 누르면 새 탭에서 열립니다. 새 탭에서 저장(Ctrl+S)하거나, 텍스트는 복사해 [소스 추가] → [복사한 텍스트]에 붙여넣으세요.</td></tr>
+    <tr><td>논문 PDF 주소가 안 열릴 때</td><td><a href="https://doi.org/10.4275/KSLIS.2025.59.1.671" target="_blank" rel="noopener">DOI 페이지</a>에서 원문을 받거나, <a href="https://scholar.google.com/scholar?q=%EB%8C%80%ED%95%99%EC%83%9D%EC%9D%98+AI+%ED%99%9C%EC%9A%A9+%ED%8A%B9%EC%84%B1%EA%B3%BC+%EC%9D%B8%EC%8B%9D+%EB%B6%84%EC%84%9D" target="_blank" rel="noopener">Google 학술검색</a>에서 제목으로 찾으세요. 그래도 안 되면 강사에게 받습니다.</td></tr>
+    <tr><td>이 페이지 자체가 안 열릴 때</td><td>강사가 나눠 주는 자료 폴더(노트북실습자료_5선)를 그대로 쓰면 됩니다. 폴더 이름이 이 페이지의 실습 번호와 같습니다.</td></tr>
+  </tbody></table></div>
+  <h4 class="sub">실습·부록별 묶음</h4>
+  <div class="zgrid"><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>Part 1 스킬 · 스킬 파일 4개 (과목튜터·자소서코치·팀플매니저·표요약)</b><span>스킬_4종.zip · 파일 4개</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="skills" data-fn="스킬_4종.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/skills/s1.md" target="_blank" rel="noopener">01_과목튜터.md</a></li><li><a href="files/skills/s2.md" target="_blank" rel="noopener">02_자소서코치.md</a></li><li><a href="files/skills/s3.md" target="_blank" rel="noopener">03_팀플매니저.md</a></li><li><a href="files/skills/s4.md" target="_blank" rel="noopener">04_표요약.md</a></li></ul></details></div><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>실습 1 · 과목별 노트북 자료 10개</b><span>실습1_과목별노트북.zip · 파일 10개</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="p1" data-fn="실습1_과목별노트북.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/raw/f001.md" target="_blank" rel="noopener">01_경영학원론_강의계획서_2026-1.md</a></li><li><a href="files/raw/f002.md" target="_blank" rel="noopener">02_경영학원론_중간고사_기출_2025.md</a></li><li><a href="files/raw/f003.md" target="_blank" rel="noopener">03_경영학원론_강의슬라이드_핵심요약.md</a></li><li><a href="files/raw/f004.md" target="_blank" rel="noopener">04_공학수학1_강의계획서_2026-1.md</a></li><li><a href="files/raw/f005.md" target="_blank" rel="noopener">05_공학수학1_과제1_안내문.md</a></li><li><a href="files/raw/f006.md" target="_blank" rel="noopener">06_공학수학1_중간고사_기출_2024.md</a></li><li><a href="files/raw/f007.md" target="_blank" rel="noopener">07_대학영어_교양필수_강의계획서_2026-1.md</a></li><li><a href="files/raw/f008.md" target="_blank" rel="noopener">08_대학영어_발표_과제공지.md</a></li><li><a href="files/raw/f009.md" target="_blank" rel="noopener">09_대학글쓰기_기말과제_안내.md</a></li><li><a href="files/raw/f010.md" target="_blank" rel="noopener">10_기출족보_시험정보_모음.md</a></li></ul></details></div><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>실습 2 · 샘플 강의자료</b><span>실습2_강의자료_논문읽기.zip · 파일 1개</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="p2" data-fn="실습2_강의자료_논문읽기.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/raw/f011.md" target="_blank" rel="noopener">01_샘플_강의자료_행동경제학_3주차.md</a></li></ul></details></div><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>실습 4 · 장학 공고문 + 생활비 CSV</b><span>실습4_장학금_생활비_비교.zip · 파일 2개</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="p4" data-fn="실습4_장학금_생활비_비교.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/raw/f012.md" target="_blank" rel="noopener">01_장학_지원_공고문_가상.md</a></li><li><a href="files/raw/f013.csv" target="_blank" rel="noopener">02_자취_주거_생활비_비교_가상.csv</a></li></ul></details></div><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>실습 5 · 포스터 템플릿·예시 + 상권 자료</b><span>실습5_포스터_발표자료.zip · 파일 6개</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="p5" data-fn="실습5_포스터_발표자료.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/raw/f014.png" target="_blank" rel="noopener">01_기존_효원가을대동제_포스터_템플릿.png</a></li><li><a href="files/raw/f015.png" target="_blank" rel="noopener">02_예시결과_효원봄버스킹_포스터.png</a></li><li><a href="files/raw/f016.md" target="_blank" rel="noopener">03_상권팀플_주제_요약문.md</a></li><li><a href="files/raw/f017.md" target="_blank" rel="noopener">2-1_정문_상권_현황.md</a></li><li><a href="files/raw/f018.md" target="_blank" rel="noopener">2-2_북문_상권_현황.md</a></li><li><a href="files/raw/f019.md" target="_blank" rel="noopener">2-3_재학생_상권_이용_설문.md</a></li></ul></details></div><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>실습 5 선택 · 실험 사진 4장</b><span>실습5_선택_실험사진.zip · 파일 4개</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="p5lab" data-fn="실습5_선택_실험사진.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/raw/f020.png" target="_blank" rel="noopener">실험1_보호구_착용.png</a></li><li><a href="files/raw/f021.png" target="_blank" rel="noopener">실험2_시약_계량.png</a></li><li><a href="files/raw/f022.png" target="_blank" rel="noopener">실험3_장치_조립.png</a></li><li><a href="files/raw/f023.png" target="_blank" rel="noopener">실험4_폐기물_분리.png</a></li></ul></details></div><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>부록 A · 대동제 물품 엑셀</b><span>부록A_대동제_엑셀.zip · 파일 3개</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="A" data-fn="부록A_대동제_엑셀.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/raw/f024.png" target="_blank" rel="noopener">01_수기_재고_스캔본.png</a></li><li><a href="files/raw/f025.md" target="_blank" rel="noopener">02_비품_기준표.md</a></li><li><a href="files/raw/f026.md" target="_blank" rel="noopener">3-1_대동제_비품_렌털_업체별_견적.md</a></li></ul></details></div><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>부록 B · 워드 지원서</b><span>부록B_워드_지원서.zip · 파일 5개</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="B" data-fn="부록B_워드_지원서.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><span>01_개인_이력정보_문서.docx</span><em>ZIP으로 받기</em></li><li><a href="files/raw/f028.png" target="_blank" rel="noopener">02_대기업인턴_지원서_양식.png</a></li><li><a href="files/raw/f029.png" target="_blank" rel="noopener">03_공공기관_대외활동_지원서_양식.png</a></li><li><span>04_예상결과_대기업인턴_지원서.docx</span><em>ZIP으로 받기</em></li><li><span>05_예상결과_공공기관_지원서.docx</span><em>ZIP으로 받기</em></li></ul></details></div><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>부록 C · 졸업요건 구버전 공지</b><span>부록C_졸업요건_구버전공지.zip · 파일 7개</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="C" data-fn="부록C_졸업요건_구버전공지.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/raw/f032.pdf" target="_blank" rel="noopener">01_2026_부산대_요람_졸업요건_발췌.pdf</a></li><li><a href="files/raw/f033.pdf" target="_blank" rel="noopener">02_2026_공학인증_이수학점_안내.pdf</a></li><li><a href="files/raw/f034.pdf" target="_blank" rel="noopener">03_2026_어학졸업인증_기준표.pdf</a></li><li><a href="files/raw/f035.pdf" target="_blank" rel="noopener">04_2024_구어학기준_공지.pdf</a></li><li><a href="files/raw/f036.pdf" target="_blank" rel="noopener">05_2026_복수전공_신청_공지.pdf</a></li><li><a href="files/raw/f037.pdf" target="_blank" rel="noopener">06_2025_복수전공_수기신청_구공지.pdf</a></li><li><a href="files/raw/f038.pdf" target="_blank" rel="noopener">07_기계공학부_복수전공_내규.pdf</a></li></ul></details></div><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>부록 D · 부산 취업 자격요건</b><span>부록D_부산취업_자격요건.zip · 파일 5개</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="D" data-fn="부록D_부산취업_자격요건.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/raw/f039.md" target="_blank" rel="noopener">1-1_부산청년정책_요약.md</a></li><li><a href="files/raw/f040.md" target="_blank" rel="noopener">1-2_BIFC_문현금융단지_기관안내.md</a></li><li><a href="files/raw/f041.md" target="_blank" rel="noopener">1-3_센텀시티_IT기업_채용공고.md</a></li><li><a href="files/raw/f042.md" target="_blank" rel="noopener">1-4_부산_공공기관_채용_자격요건.md</a></li><li><a href="files/raw/f043.md" target="_blank" rel="noopener">1-5_IT기업_직무별_자격요건.md</a></li></ul></details></div><div class="file pack"><div class="fhead"><span class="ficon" aria-hidden="true">ZIP</span><div class="fmeta"><b>부록 E · 유튜브 복습 영상 목록</b><span>부록E_유튜브_복습.zip · 파일 1개</span></div></div>
+  <div class="fbtns"><button type="button" class="zipbtn" data-pack="E" data-fn="부록E_유튜브_복습.zip">한 번에 내려받기</button></div><p class="dlmsg" aria-live="polite"></p>
+  <details class="flist"><summary>안 받아질 때: 파일 하나씩 열기</summary><ul class="links"><li><a href="files/raw/f044.md" target="_blank" rel="noopener">4-1_유튜브_영상_목록.md</a></li></ul></details></div></div>
+</section>
+
+<section id="canvas100">
+  <p class="eyebrow">부록</p>
+  <h2>캔버스 웹앱 프롬프트 100선</h2>
+  <p class="lead">Gemini 입력창 아래에서 [캔버스]를 켜고 붙여넣으세요. 모든 프롬프트는 RCCF 구조입니다. 역할(Role)로 AI의 관점을, 맥락(Context)으로 내 상황을, 명령(Command)으로 만들 기능을, 형식(Format)으로 결과물의 모양을 정합니다. 맥락의 내 상황 부분을 바꾸면 나만의 앱이 됩니다.</p>
+  <div class="tools100">
+    <input type="search" id="q100" placeholder="검색: 예) 가계부, 타이머, 퀴즈" aria-label="프롬프트 검색">
+    <div class="chips" role="group" aria-label="카테고리"><button type="button" class="chip" aria-pressed="true" data-cat="all">전체 100</button><button type="button" class="chip" aria-pressed="false" data-cat="study">공부·시험 10</button><button type="button" class="chip" aria-pressed="false" data-cat="time">시간·일정 관리 10</button><button type="button" class="chip" aria-pressed="false" data-cat="money">자취·생활비 10</button><button type="button" class="chip" aria-pressed="false" data-cat="health">건강·식단·운동 10</button><button type="button" class="chip" aria-pressed="false" data-cat="career">진로·취업 10</button><button type="button" class="chip" aria-pressed="false" data-cat="team">팀플·동아리 10</button><button type="button" class="chip" aria-pressed="false" data-cat="major">전공 개념 시뮬레이터 10</button><button type="button" class="chip" aria-pressed="false" data-cat="campus">캠퍼스 생활 10</button><button type="button" class="chip" aria-pressed="false" data-cat="fun">놀이·게임 10</button><button type="button" class="chip" aria-pressed="false" data-cat="present">발표·글쓰기·데이터 10</button></div>
+    <p class="count100" aria-live="polite"><b id="n100">100</b>개 표시 중</p>
+  </div>
+  <div class="list100"><details class="cp" data-cat="study" data-q="시험 d-day 플래너 중간·기말고사 기간마다 어떤 과목을 언제 공부할지 매번 헷갈려. 과목명, 시험 날짜, 공부할 단원 수를 입력하면 오늘부터 시험 전날까지 하루 단원 배분표를 자동으로 만들어줘. 완료한 단원은 체크하면 진행률이 올라가게 해줘."><summary><span class="no">001</span><span class="ct">시험 D-day 플래너</span><span class="cc">공부·시험</span></summary><pre>[역할] 너는 대학생 학습 도구를 만드는 친절한 웹 개발자야.
+[맥락] 중간·기말고사 기간마다 어떤 과목을 언제 공부할지 매번 헷갈려.
+[명령] 과목명, 시험 날짜, 공부할 단원 수를 입력하면 오늘부터 시험 전날까지 하루 단원 배분표를 자동으로 만들어줘. 완료한 단원은 체크하면 진행률이 올라가게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 과목별 색 구분, 상단에 D-day 카드.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="study" data-q="나만의 플래시카드 전공 용어를 외워야 하는데 종이 카드는 자꾸 잃어버려. 앞면(용어)과 뒷면(뜻)을 입력해 카드를 만들고, 넘겨보며 &#x27;알아요/몰라요&#x27;를 표시하면 모르는 카드만 다시 나오게 해줘."><summary><span class="no">002</span><span class="ct">나만의 플래시카드</span><span class="cc">공부·시험</span></summary><pre>[역할] 너는 대학생 학습 도구를 만드는 친절한 웹 개발자야.
+[맥락] 전공 용어를 외워야 하는데 종이 카드는 자꾸 잃어버려.
+[명령] 앞면(용어)과 뒷면(뜻)을 입력해 카드를 만들고, 넘겨보며 &#x27;알아요/몰라요&#x27;를 표시하면 모르는 카드만 다시 나오게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 카드 뒤집기 애니메이션, 남은 카드 수 표시.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="study" data-q="오답노트 모의고사와 과제에서 틀린 문제를 정리하고 싶은데 노트가 지저분해져. 과목, 문제, 내 답, 정답, 틀린 이유를 입력하는 오답노트를 만들어줘. 틀린 이유 유형(개념 부족, 실수, 시간 부족)별로 모아 보는 필터를 넣어줘."><summary><span class="no">003</span><span class="ct">오답노트</span><span class="cc">공부·시험</span></summary><pre>[역할] 너는 대학생 학습 도구를 만드는 친절한 웹 개발자야.
+[맥락] 모의고사와 과제에서 틀린 문제를 정리하고 싶은데 노트가 지저분해져.
+[명령] 과목, 문제, 내 답, 정답, 틀린 이유를 입력하는 오답노트를 만들어줘. 틀린 이유 유형(개념 부족, 실수, 시간 부족)별로 모아 보는 필터를 넣어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 유형별 개수 막대그래프.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="study" data-q="뽀모도로 공부 타이머 공부를 시작하면 30분도 집중이 안 되고 휴대폰을 보게 돼. 25분 공부, 5분 휴식을 반복하는 타이머를 만들고, 오늘 완료한 회차와 과목별 누적 공부 시간을 기록해줘."><summary><span class="no">004</span><span class="ct">뽀모도로 공부 타이머</span><span class="cc">공부·시험</span></summary><pre>[역할] 너는 대학생 학습 도구를 만드는 친절한 웹 개발자야.
+[맥락] 공부를 시작하면 30분도 집중이 안 되고 휴대폰을 보게 돼.
+[명령] 25분 공부, 5분 휴식을 반복하는 타이머를 만들고, 오늘 완료한 회차와 과목별 누적 공부 시간을 기록해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 큰 원형 타이머, 시작·일시정지·초기화 버튼, 종료 시 알림음.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="study" data-q="학점 계산기 이번 학기 성적이 나오기 전에 평점이 얼마나 될지 궁금해. 과목명, 학점, 예상 성적(a+~f)을 입력하면 이번 학기 평점과 지난 학기까지 포함한 누적 평점을 계산해줘. 장학금 기준 평점(예: 3.5)을 넣으면 달성 여부도 보여줘."><summary><span class="no">005</span><span class="ct">학점 계산기</span><span class="cc">공부·시험</span></summary><pre>[역할] 너는 대학생 학습 도구를 만드는 친절한 웹 개발자야.
+[맥락] 이번 학기 성적이 나오기 전에 평점이 얼마나 될지 궁금해.
+[명령] 과목명, 학점, 예상 성적(A+~F)을 입력하면 이번 학기 평점과 지난 학기까지 포함한 누적 평점을 계산해줘. 장학금 기준 평점(예: 3.5)을 넣으면 달성 여부도 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 4.5 만점 기준, 과목 추가·삭제 버튼.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="study" data-q="목표 평점 역산기 졸업할 때 평점 3.8을 맞추려면 남은 학기에 몇 점을 받아야 할지 모르겠어. 지금까지 이수 학점과 평점, 남은 학점, 목표 평점을 입력하면 남은 학기에 필요한 평균 평점을 계산하고 가능 여부를 알려줘."><summary><span class="no">006</span><span class="ct">목표 평점 역산기</span><span class="cc">공부·시험</span></summary><pre>[역할] 너는 대학생 학습 도구를 만드는 친절한 웹 개발자야.
+[맥락] 졸업할 때 평점 3.8을 맞추려면 남은 학기에 몇 점을 받아야 할지 모르겠어.
+[명령] 지금까지 이수 학점과 평점, 남은 학점, 목표 평점을 입력하면 남은 학기에 필요한 평균 평점을 계산하고 가능 여부를 알려줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 결과를 한 문장으로 크게, 계산 과정은 접기.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="study" data-q="개념 연결 마인드맵 전공 개념들이 머릿속에서 따로 놀아서 시험 때 연결이 안 돼. 개념을 노드로 추가하고 두 노드를 선으로 연결하며 관계(원인, 예시, 반대 등)를 적을 수 있는 마인드맵 앱을 만들어줘."><summary><span class="no">007</span><span class="ct">개념 연결 마인드맵</span><span class="cc">공부·시험</span></summary><pre>[역할] 너는 대학생 학습 도구를 만드는 친절한 웹 개발자야.
+[맥락] 전공 개념들이 머릿속에서 따로 놀아서 시험 때 연결이 안 돼.
+[명령] 개념을 노드로 추가하고 두 노드를 선으로 연결하며 관계(원인, 예시, 반대 등)를 적을 수 있는 마인드맵 앱을 만들어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 노드 드래그 이동, 관계 라벨 표시.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="study" data-q="셀프 퀴즈 메이커 친구들과 시험 범위 퀴즈를 서로 내주고 싶어. 문제와 보기 4개, 정답을 입력해 퀴즈를 만들고, 풀기 모드에서 점수와 틀린 문제 해설을 보여줘."><summary><span class="no">008</span><span class="ct">셀프 퀴즈 메이커</span><span class="cc">공부·시험</span></summary><pre>[역할] 너는 대학생 학습 도구를 만드는 친절한 웹 개발자야.
+[맥락] 친구들과 시험 범위 퀴즈를 서로 내주고 싶어.
+[명령] 문제와 보기 4개, 정답을 입력해 퀴즈를 만들고, 풀기 모드에서 점수와 틀린 문제 해설을 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 편집 모드와 풀기 모드 탭.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="study" data-q="영어 단어 스펠링 게임 토익 단어를 뜻은 아는데 철자를 자꾸 틀려. 단어와 뜻 목록을 입력하면 뜻을 보여주고 철자를 입력하게 하는 게임을 만들어줘. 틀리면 힌트로 첫 글자를 보여주고, 많이 틀린 단어를 따로 모아줘."><summary><span class="no">009</span><span class="ct">영어 단어 스펠링 게임</span><span class="cc">공부·시험</span></summary><pre>[역할] 너는 대학생 학습 도구를 만드는 친절한 웹 개발자야.
+[맥락] 토익 단어를 뜻은 아는데 철자를 자꾸 틀려.
+[명령] 단어와 뜻 목록을 입력하면 뜻을 보여주고 철자를 입력하게 하는 게임을 만들어줘. 틀리면 힌트로 첫 글자를 보여주고, 많이 틀린 단어를 따로 모아줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 정답 시 초록, 오답 시 빨강 효과.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="study" data-q="강의 복습 체크리스트 수업을 듣고 나서 복습을 했는지 안 했는지 기억이 안 나. 과목별 주차 목록을 만들고 수업 듣기, 1차 복습(당일), 2차 복습(1주 후)을 체크하는 표를 만들어줘. 복습할 날이 된 항목을 맨 위에 보여줘."><summary><span class="no">010</span><span class="ct">강의 복습 체크리스트</span><span class="cc">공부·시험</span></summary><pre>[역할] 너는 대학생 학습 도구를 만드는 친절한 웹 개발자야.
+[맥락] 수업을 듣고 나서 복습을 했는지 안 했는지 기억이 안 나.
+[명령] 과목별 주차 목록을 만들고 수업 듣기, 1차 복습(당일), 2차 복습(1주 후)을 체크하는 표를 만들어줘. 복습할 날이 된 항목을 맨 위에 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 오늘 할 복습 강조 표시.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="time" data-q="주간 시간표 메이커 수강신청 후 시간표를 예쁘게 정리해서 보고 싶어. 요일, 시작·종료 시간, 과목명, 강의실을 입력하면 주간 시간표 격자에 블록으로 그려줘. 공강 시간을 자동으로 표시해줘."><summary><span class="no">011</span><span class="ct">주간 시간표 메이커</span><span class="cc">시간·일정 관리</span></summary><pre>[역할] 너는 바쁜 대학생의 시간 관리를 돕는 생산성 앱 개발자야.
+[맥락] 수강신청 후 시간표를 예쁘게 정리해서 보고 싶어.
+[명령] 요일, 시작·종료 시간, 과목명, 강의실을 입력하면 주간 시간표 격자에 블록으로 그려줘. 공강 시간을 자동으로 표시해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 월~금 9시~21시 격자, 과목별 색.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="time" data-q="알바·수업 겹침 체커 아르바이트 시간을 정해야 하는데 수업과 겹치는지 매번 확인하기 귀찮아. 수업 시간과 알바 가능 시간을 입력하면 겹치는 시간을 빨간색으로, 이동 시간 30분을 고려해 가능한 알바 시간대를 초록색으로 보여줘."><summary><span class="no">012</span><span class="ct">알바·수업 겹침 체커</span><span class="cc">시간·일정 관리</span></summary><pre>[역할] 너는 바쁜 대학생의 시간 관리를 돕는 생산성 앱 개발자야.
+[맥락] 아르바이트 시간을 정해야 하는데 수업과 겹치는지 매번 확인하기 귀찮아.
+[명령] 수업 시간과 알바 가능 시간을 입력하면 겹치는 시간을 빨간색으로, 이동 시간 30분을 고려해 가능한 알바 시간대를 초록색으로 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 주간 격자 위에 두 겹 표시.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="time" data-q="과제 마감 트래커 과제 마감이 여러 과목에 흩어져 있어서 자주 놓쳐. 과목, 과제명, 마감일시, 예상 소요 시간을 입력하면 마감이 가까운 순서로 정렬하고, 48시간 이내 과제는 경고 표시를 해줘."><summary><span class="no">013</span><span class="ct">과제 마감 트래커</span><span class="cc">시간·일정 관리</span></summary><pre>[역할] 너는 바쁜 대학생의 시간 관리를 돕는 생산성 앱 개발자야.
+[맥락] 과제 마감이 여러 과목에 흩어져 있어서 자주 놓쳐.
+[명령] 과목, 과제명, 마감일시, 예상 소요 시간을 입력하면 마감이 가까운 순서로 정렬하고, 48시간 이내 과제는 경고 표시를 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 카드 목록, 남은 시간 실시간 표시.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="time" data-q="하루 타임블록 플래너 하루 계획을 세워도 실제로 뭘 했는지 기록이 안 남아. 30분 단위 하루 시간표에 계획과 실제를 나란히 적고, 하루가 끝나면 계획 대비 실행률을 계산해줘."><summary><span class="no">014</span><span class="ct">하루 타임블록 플래너</span><span class="cc">시간·일정 관리</span></summary><pre>[역할] 너는 바쁜 대학생의 시간 관리를 돕는 생산성 앱 개발자야.
+[맥락] 하루 계획을 세워도 실제로 뭘 했는지 기록이 안 남아.
+[명령] 30분 단위 하루 시간표에 계획과 실제를 나란히 적고, 하루가 끝나면 계획 대비 실행률을 계산해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 왼쪽 계획, 오른쪽 실제 두 열.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="time" data-q="습관 트래커 매일 운동, 영어 공부, 일기를 하겠다고 해놓고 며칠 만에 잊어버려. 습관을 추가하고 매일 체크하면 한 달 달력에 잔디처럼 칠해지고 연속 달성 일수를 보여줘."><summary><span class="no">015</span><span class="ct">습관 트래커</span><span class="cc">시간·일정 관리</span></summary><pre>[역할] 너는 바쁜 대학생의 시간 관리를 돕는 생산성 앱 개발자야.
+[맥락] 매일 운동, 영어 공부, 일기를 하겠다고 해놓고 며칠 만에 잊어버려.
+[명령] 습관을 추가하고 매일 체크하면 한 달 달력에 잔디처럼 칠해지고 연속 달성 일수를 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 달력 히트맵, 연속 기록 배지.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="time" data-q="우선순위 매트릭스 할 일이 너무 많아서 뭐부터 해야 할지 모르겠어. 할 일을 입력하고 중요도와 긴급도를 고르면 4칸 매트릭스에 배치해줘. 칸 사이로 드래그해서 옮길 수 있게 해줘."><summary><span class="no">016</span><span class="ct">우선순위 매트릭스</span><span class="cc">시간·일정 관리</span></summary><pre>[역할] 너는 바쁜 대학생의 시간 관리를 돕는 생산성 앱 개발자야.
+[맥락] 할 일이 너무 많아서 뭐부터 해야 할지 모르겠어.
+[명령] 할 일을 입력하고 중요도와 긴급도를 고르면 4칸 매트릭스에 배치해줘. 칸 사이로 드래그해서 옮길 수 있게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 4분면 색 구분, 각 칸의 개수 표시.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="time" data-q="방학 계획표 방학마다 계획만 세우고 흐지부지 끝나. 방학 기간과 목표(자격증, 운동, 여행 등)를 입력하면 주차별 계획표를 만들고, 매주 달성률을 기록할 수 있게 해줘."><summary><span class="no">017</span><span class="ct">방학 계획표</span><span class="cc">시간·일정 관리</span></summary><pre>[역할] 너는 바쁜 대학생의 시간 관리를 돕는 생산성 앱 개발자야.
+[맥락] 방학마다 계획만 세우고 흐지부지 끝나.
+[명령] 방학 기간과 목표(자격증, 운동, 여행 등)를 입력하면 주차별 계획표를 만들고, 매주 달성률을 기록할 수 있게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 주차별 진행 막대.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="time" data-q="스터디 출석부 스터디원들이 출석과 과제 제출을 잘 안 지켜. 스터디원 이름과 모임 날짜를 입력하면 출석·지각·결석과 과제 제출을 체크하는 표를 만들고, 벌금 규칙에 따라 벌금 합계를 계산해줘."><summary><span class="no">018</span><span class="ct">스터디 출석부</span><span class="cc">시간·일정 관리</span></summary><pre>[역할] 너는 바쁜 대학생의 시간 관리를 돕는 생산성 앱 개발자야.
+[맥락] 스터디원들이 출석과 과제 제출을 잘 안 지켜.
+[명령] 스터디원 이름과 모임 날짜를 입력하면 출석·지각·결석과 과제 제출을 체크하는 표를 만들고, 벌금 규칙에 따라 벌금 합계를 계산해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 사람별 합계 행, 규칙 설정 칸.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="time" data-q="수면 기록기 시험 기간에 잠을 몇 시간 자는지 모르겠고 늘 피곤해. 취침·기상 시간을 기록하면 수면 시간을 계산해 일주일 그래프로 보여주고, 평균과 권장 수면 7시간 대비 부족 시간을 알려줘."><summary><span class="no">019</span><span class="ct">수면 기록기</span><span class="cc">시간·일정 관리</span></summary><pre>[역할] 너는 바쁜 대학생의 시간 관리를 돕는 생산성 앱 개발자야.
+[맥락] 시험 기간에 잠을 몇 시간 자는지 모르겠고 늘 피곤해.
+[명령] 취침·기상 시간을 기록하면 수면 시간을 계산해 일주일 그래프로 보여주고, 평균과 권장 수면 7시간 대비 부족 시간을 알려줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 주간 막대그래프, 평균선.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="time" data-q="집중 방해 기록기 공부하다가 뭐 때문에 자꾸 딴짓을 하는지 알고 싶어. 공부 중 딴짓을 할 때마다 버튼으로 이유(휴대폰, 배고픔, 졸음, 잡생각)를 기록하고, 하루가 끝나면 원인별 횟수를 보여줘."><summary><span class="no">020</span><span class="ct">집중 방해 기록기</span><span class="cc">시간·일정 관리</span></summary><pre>[역할] 너는 바쁜 대학생의 시간 관리를 돕는 생산성 앱 개발자야.
+[맥락] 공부하다가 뭐 때문에 자꾸 딴짓을 하는지 알고 싶어.
+[명령] 공부 중 딴짓을 할 때마다 버튼으로 이유(휴대폰, 배고픔, 졸음, 잡생각)를 기록하고, 하루가 끝나면 원인별 횟수를 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 큰 원터치 버튼 4개, 원인별 원그래프.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="money" data-q="한 달 가계부 대시보드 자취를 시작했는데 돈이 어디로 새는지 모르겠어. 날짜, 분류, 내용, 금액을 입력하면 분류별 지출 합계 그래프와 총지출을 보여주고, 월 예산 대비 남은 돈을 계산해줘."><summary><span class="no">021</span><span class="ct">한 달 가계부 대시보드</span><span class="cc">자취·생활비</span></summary><pre>[역할] 너는 자취하는 대학생의 생활비 관리를 돕는 핀테크 앱 개발자야.
+[맥락] 자취를 시작했는데 돈이 어디로 새는지 모르겠어.
+[명령] 날짜, 분류, 내용, 금액을 입력하면 분류별 지출 합계 그래프와 총지출을 보여주고, 월 예산 대비 남은 돈을 계산해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 분류별 막대그래프, 예산 진행 막대.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="money" data-q="배달비 경고등 배달을 너무 자주 시켜서 식비가 감당이 안 돼. 배달 주문을 기록하면 이번 달 배달 횟수와 금액, 학식으로 먹었을 때 아낄 수 있었던 금액을 계산해줘. 주 3회를 넘으면 경고등을 켜줘."><summary><span class="no">022</span><span class="ct">배달비 경고등</span><span class="cc">자취·생활비</span></summary><pre>[역할] 너는 자취하는 대학생의 생활비 관리를 돕는 핀테크 앱 개발자야.
+[맥락] 배달을 너무 자주 시켜서 식비가 감당이 안 돼.
+[명령] 배달 주문을 기록하면 이번 달 배달 횟수와 금액, 학식으로 먹었을 때 아낄 수 있었던 금액을 계산해줘. 주 3회를 넘으면 경고등을 켜줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 신호등 색 표시, 절약 금액 크게.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="money" data-q="자취방 비교표 원룸, 기숙사, 셰어하우스 중 어디가 나은지 고민돼. 주거 형태별 보증금, 월세, 관리비, 식비, 교통비, 통학 시간을 입력하면 월 고정비 합계를 계산해 비교표로 보여주고, 내가 정한 가중치로 점수를 매겨줘."><summary><span class="no">023</span><span class="ct">자취방 비교표</span><span class="cc">자취·생활비</span></summary><pre>[역할] 너는 자취하는 대학생의 생활비 관리를 돕는 핀테크 앱 개발자야.
+[맥락] 원룸, 기숙사, 셰어하우스 중 어디가 나은지 고민돼.
+[명령] 주거 형태별 보증금, 월세, 관리비, 식비, 교통비, 통학 시간을 입력하면 월 고정비 합계를 계산해 비교표로 보여주고, 내가 정한 가중치로 점수를 매겨줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 가로 비교표, 1위 강조.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="money" data-q="구독 서비스 정리기 ott, 음악, 클라우드 구독이 몇 개인지도 모르겠어. 구독 서비스 이름, 월 요금, 결제일, 최근 사용 여부를 입력하면 월·연간 총액과 다음 결제일을 보여주고, 한 달 안 쓴 구독을 해지 후보로 표시해줘."><summary><span class="no">024</span><span class="ct">구독 서비스 정리기</span><span class="cc">자취·생활비</span></summary><pre>[역할] 너는 자취하는 대학생의 생활비 관리를 돕는 핀테크 앱 개발자야.
+[맥락] OTT, 음악, 클라우드 구독이 몇 개인지도 모르겠어.
+[명령] 구독 서비스 이름, 월 요금, 결제일, 최근 사용 여부를 입력하면 월·연간 총액과 다음 결제일을 보여주고, 한 달 안 쓴 구독을 해지 후보로 표시해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 결제일 달력, 해지 후보 빨간 테두리.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="money" data-q="더치페이 계산기 친구들과 mt나 회식비를 나눌 때 계산이 복잡해. 누가 무엇을 얼마 냈는지 입력하면 각자 내야 할 돈과 누가 누구에게 얼마를 보내면 되는지 최소 송금 횟수로 정리해줘."><summary><span class="no">025</span><span class="ct">더치페이 계산기</span><span class="cc">자취·생활비</span></summary><pre>[역할] 너는 자취하는 대학생의 생활비 관리를 돕는 핀테크 앱 개발자야.
+[맥락] 친구들과 MT나 회식비를 나눌 때 계산이 복잡해.
+[명령] 누가 무엇을 얼마 냈는지 입력하면 각자 내야 할 돈과 누가 누구에게 얼마를 보내면 되는지 최소 송금 횟수로 정리해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 송금 목록을 복사할 수 있는 버튼.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="money" data-q="공과금 나눔 계산기 룸메이트와 전기·가스·인터넷 요금을 나누는데 매번 싸워. 공과금 항목과 금액, 사람별 거주 일수를 입력하면 일수 비율로 나눈 금액을 계산하고 내역을 정리해줘."><summary><span class="no">026</span><span class="ct">공과금 나눔 계산기</span><span class="cc">자취·생활비</span></summary><pre>[역할] 너는 자취하는 대학생의 생활비 관리를 돕는 핀테크 앱 개발자야.
+[맥락] 룸메이트와 전기·가스·인터넷 요금을 나누는데 매번 싸워.
+[명령] 공과금 항목과 금액, 사람별 거주 일수를 입력하면 일수 비율로 나눈 금액을 계산하고 내역을 정리해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 사람별 카드, 항목별 내역 표.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="money" data-q="장보기 리스트와 예산 마트에 가면 계획보다 많이 사게 돼. 살 물건과 예상 가격을 입력해 장보기 리스트를 만들고, 장 볼 때 체크하면서 실제 가격을 넣으면 예산 초과 여부를 바로 보여줘."><summary><span class="no">027</span><span class="ct">장보기 리스트와 예산</span><span class="cc">자취·생활비</span></summary><pre>[역할] 너는 자취하는 대학생의 생활비 관리를 돕는 핀테크 앱 개발자야.
+[맥락] 마트에 가면 계획보다 많이 사게 돼.
+[명령] 살 물건과 예상 가격을 입력해 장보기 리스트를 만들고, 장 볼 때 체크하면서 실제 가격을 넣으면 예산 초과 여부를 바로 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 체크하면 줄 긋기, 상단 합계 고정.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="money" data-q="저축 목표 저금통 여행 경비 100만원을 모으고 싶은데 동기부여가 안 돼. 목표 금액과 기한을 정하고 저축할 때마다 기록하면 저금통이 차오르는 그림과 남은 기간 동안 하루에 얼마씩 모아야 하는지 보여줘."><summary><span class="no">028</span><span class="ct">저축 목표 저금통</span><span class="cc">자취·생활비</span></summary><pre>[역할] 너는 자취하는 대학생의 생활비 관리를 돕는 핀테크 앱 개발자야.
+[맥락] 여행 경비 100만원을 모으고 싶은데 동기부여가 안 돼.
+[명령] 목표 금액과 기한을 정하고 저축할 때마다 기록하면 저금통이 차오르는 그림과 남은 기간 동안 하루에 얼마씩 모아야 하는지 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 채워지는 저금통 그림, 달성률 %.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="money" data-q="장학금 마감 캘린더 장학금 공고가 여기저기 흩어져 있어서 마감을 자주 놓쳐. 장학금 이름, 금액, 신청 기간, 필요 서류를 입력하면 달력에 표시하고, 마감 7일 전 항목과 준비 서류 체크리스트를 보여줘."><summary><span class="no">029</span><span class="ct">장학금 마감 캘린더</span><span class="cc">자취·생활비</span></summary><pre>[역할] 너는 자취하는 대학생의 생활비 관리를 돕는 핀테크 앱 개발자야.
+[맥락] 장학금 공고가 여기저기 흩어져 있어서 마감을 자주 놓쳐.
+[명령] 장학금 이름, 금액, 신청 기간, 필요 서류를 입력하면 달력에 표시하고, 마감 7일 전 항목과 준비 서류 체크리스트를 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 월간 달력, 서류 체크리스트.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="money" data-q="자취 요리 냉장고 털기 냉장고에 남은 재료로 뭘 해 먹을지 모르겠어. 가진 재료를 체크하면 미리 넣어둔 자취 요리 20가지 중 만들 수 있는 요리와 부족한 재료 1~2개만 있으면 되는 요리를 보여줘."><summary><span class="no">030</span><span class="ct">자취 요리 냉장고 털기</span><span class="cc">자취·생활비</span></summary><pre>[역할] 너는 자취하는 대학생의 생활비 관리를 돕는 핀테크 앱 개발자야.
+[맥락] 냉장고에 남은 재료로 뭘 해 먹을지 모르겠어.
+[명령] 가진 재료를 체크하면 미리 넣어둔 자취 요리 20가지 중 만들 수 있는 요리와 부족한 재료 1~2개만 있으면 되는 요리를 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 재료 체크 칩, 요리 카드에 예상 비용.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="health" data-q="물 마시기 알리미 공부하다 보면 하루 종일 물을 거의 안 마셔. 하루 목표 물 양을 정하고 컵 버튼을 누를 때마다 기록해 물병이 차오르게 보여줘. 1시간 동안 기록이 없으면 화면에 알림을 띄워줘."><summary><span class="no">031</span><span class="ct">물 마시기 알리미</span><span class="cc">건강·식단·운동</span></summary><pre>[역할] 너는 대학생의 건강한 생활을 돕는 헬스케어 앱 개발자야.
+[맥락] 공부하다 보면 하루 종일 물을 거의 안 마셔.
+[명령] 하루 목표 물 양을 정하고 컵 버튼을 누를 때마다 기록해 물병이 차오르게 보여줘. 1시간 동안 기록이 없으면 화면에 알림을 띄워줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 물병 그림, 하루 기록 그래프.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="health" data-q="학식 메뉴 영양 기록 학식을 자주 먹는데 영양이 괜찮은지 모르겠어. 먹은 메뉴와 대략적인 칼로리·단백질을 기록하면 하루 합계와 일주일 추이를 보여주고, 단백질이 부족한 날을 표시해줘."><summary><span class="no">032</span><span class="ct">학식 메뉴 영양 기록</span><span class="cc">건강·식단·운동</span></summary><pre>[역할] 너는 대학생의 건강한 생활을 돕는 헬스케어 앱 개발자야.
+[맥락] 학식을 자주 먹는데 영양이 괜찮은지 모르겠어.
+[명령] 먹은 메뉴와 대략적인 칼로리·단백질을 기록하면 하루 합계와 일주일 추이를 보여주고, 단백질이 부족한 날을 표시해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 일별 막대그래프, 부족 경고.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="health" data-q="홈트 루틴 타이머 자취방에서 운동하려는데 루틴 짜기가 어려워. 운동 이름, 시간(초), 휴식 시간을 입력해 루틴을 만들고, 시작하면 순서대로 카운트다운하며 다음 운동을 미리 보여줘."><summary><span class="no">033</span><span class="ct">홈트 루틴 타이머</span><span class="cc">건강·식단·운동</span></summary><pre>[역할] 너는 대학생의 건강한 생활을 돕는 헬스케어 앱 개발자야.
+[맥락] 자취방에서 운동하려는데 루틴 짜기가 어려워.
+[명령] 운동 이름, 시간(초), 휴식 시간을 입력해 루틴을 만들고, 시작하면 순서대로 카운트다운하며 다음 운동을 미리 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 큰 숫자 카운트다운, 진행 막대.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="health" data-q="만보 걷기 챌린지 친구들과 걷기 내기를 하고 싶어. 참가자 이름과 날마다 걸음 수를 입력하면 순위표와 누적 그래프를 보여주고, 목표를 달성한 날에 도장을 찍어줘."><summary><span class="no">034</span><span class="ct">만보 걷기 챌린지</span><span class="cc">건강·식단·운동</span></summary><pre>[역할] 너는 대학생의 건강한 생활을 돕는 헬스케어 앱 개발자야.
+[맥락] 친구들과 걷기 내기를 하고 싶어.
+[명령] 참가자 이름과 날마다 걸음 수를 입력하면 순위표와 누적 그래프를 보여주고, 목표를 달성한 날에 도장을 찍어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 순위표, 사람별 꺾은선.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="health" data-q="기분 일기 요즘 기분이 들쑥날쑥한데 이유를 모르겠어. 매일 기분을 5단계로 고르고 한 줄 메모와 원인 태그(시험, 관계, 수면 등)를 남기면 한 달 기분 달력과 태그별 평균 기분을 보여줘."><summary><span class="no">035</span><span class="ct">기분 일기</span><span class="cc">건강·식단·운동</span></summary><pre>[역할] 너는 대학생의 건강한 생활을 돕는 헬스케어 앱 개발자야.
+[맥락] 요즘 기분이 들쑥날쑥한데 이유를 모르겠어.
+[명령] 매일 기분을 5단계로 고르고 한 줄 메모와 원인 태그(시험, 관계, 수면 등)를 남기면 한 달 기분 달력과 태그별 평균 기분을 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 기분별 색 달력.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="health" data-q="스트레칭 리마인더 오래 앉아 있어서 목과 허리가 아파. 50분마다 화면에 스트레칭 안내 카드를 띄우고, 목·어깨·허리 동작 5가지를 순서대로 안내해줘."><summary><span class="no">036</span><span class="ct">스트레칭 리마인더</span><span class="cc">건강·식단·운동</span></summary><pre>[역할] 너는 대학생의 건강한 생활을 돕는 헬스케어 앱 개발자야.
+[맥락] 오래 앉아 있어서 목과 허리가 아파.
+[명령] 50분마다 화면에 스트레칭 안내 카드를 띄우고, 목·어깨·허리 동작 5가지를 순서대로 안내해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 동작 설명 카드, 다음 알림까지 남은 시간.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="health" data-q="카페인 계산기 시험 기간에 커피를 너무 많이 마시는 것 같아. 마신 음료(아메리카노, 에너지 음료 등)를 고르면 카페인 양을 합산하고, 하루 권장량 400mg 대비 비율과 취침 시간까지 남을 카페인 양을 추정해줘."><summary><span class="no">037</span><span class="ct">카페인 계산기</span><span class="cc">건강·식단·운동</span></summary><pre>[역할] 너는 대학생의 건강한 생활을 돕는 헬스케어 앱 개발자야.
+[맥락] 시험 기간에 커피를 너무 많이 마시는 것 같아.
+[명령] 마신 음료(아메리카노, 에너지 음료 등)를 고르면 카페인 양을 합산하고, 하루 권장량 400mg 대비 비율과 취침 시간까지 남을 카페인 양을 추정해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 음료 버튼, 게이지.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="health" data-q="식비·건강 균형 식단표 적은 돈으로 일주일 식단을 짜고 싶어. 일주일 식비 예산과 끼니 수를 입력하면 미리 넣어둔 저렴한 메뉴로 식단표를 만들어주고, 메뉴를 바꾸면 총비용이 다시 계산되게 해줘."><summary><span class="no">038</span><span class="ct">식비·건강 균형 식단표</span><span class="cc">건강·식단·운동</span></summary><pre>[역할] 너는 대학생의 건강한 생활을 돕는 헬스케어 앱 개발자야.
+[맥락] 적은 돈으로 일주일 식단을 짜고 싶어.
+[명령] 일주일 식비 예산과 끼니 수를 입력하면 미리 넣어둔 저렴한 메뉴로 식단표를 만들어주고, 메뉴를 바꾸면 총비용이 다시 계산되게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 7일 × 3끼 표.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="health" data-q="체력 테스트 기록장 운동을 시작했는데 실력이 느는지 모르겠어. 팔굽혀펴기, 스쿼트, 플랭크 기록을 날짜별로 입력하면 항목별 변화 그래프와 첫 기록 대비 향상률을 보여줘."><summary><span class="no">039</span><span class="ct">체력 테스트 기록장</span><span class="cc">건강·식단·운동</span></summary><pre>[역할] 너는 대학생의 건강한 생활을 돕는 헬스케어 앱 개발자야.
+[맥락] 운동을 시작했는데 실력이 느는지 모르겠어.
+[명령] 팔굽혀펴기, 스쿼트, 플랭크 기록을 날짜별로 입력하면 항목별 변화 그래프와 첫 기록 대비 향상률을 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 항목 탭, 꺾은선 그래프.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="health" data-q="디지털 디톡스 챌린지 휴대폰 사용 시간이 하루 8시간이 넘어. 매일 스크린타임을 입력하면 목표 대비 성공 여부를 표시하고, 줄인 시간을 공부·운동 시간으로 바꾸면 얼마인지 환산해 보여줘."><summary><span class="no">040</span><span class="ct">디지털 디톡스 챌린지</span><span class="cc">건강·식단·운동</span></summary><pre>[역할] 너는 대학생의 건강한 생활을 돕는 헬스케어 앱 개발자야.
+[맥락] 휴대폰 사용 시간이 하루 8시간이 넘어.
+[명령] 매일 스크린타임을 입력하면 목표 대비 성공 여부를 표시하고, 줄인 시간을 공부·운동 시간으로 바꾸면 얼마인지 환산해 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 주간 막대, 절약 시간 카드.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="career" data-q="스펙 대시보드 어학, 자격증, 대외활동을 어디까지 했는지 한눈에 보고 싶어. 어학 점수, 자격증, 대외활동, 인턴 경험을 입력하면 영역별 카드로 정리하고, 희망 직무에 필요한 항목 대비 채운 정도를 보여줘."><summary><span class="no">041</span><span class="ct">스펙 대시보드</span><span class="cc">진로·취업</span></summary><pre>[역할] 너는 대학생 취업 준비를 돕는 커리어 서비스 개발자야.
+[맥락] 어학, 자격증, 대외활동을 어디까지 했는지 한눈에 보고 싶어.
+[명령] 어학 점수, 자격증, 대외활동, 인턴 경험을 입력하면 영역별 카드로 정리하고, 희망 직무에 필요한 항목 대비 채운 정도를 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 영역별 진행 막대.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="career" data-q="자격증 시험 일정 관리 올해 따야 할 자격증 시험 접수일을 자주 놓쳐. 자격증명, 접수 기간, 시험일, 발표일을 입력하면 타임라인으로 보여주고 접수 시작 7일 전에 강조 표시해줘."><summary><span class="no">042</span><span class="ct">자격증 시험 일정 관리</span><span class="cc">진로·취업</span></summary><pre>[역할] 너는 대학생 취업 준비를 돕는 커리어 서비스 개발자야.
+[맥락] 올해 따야 할 자격증 시험 접수일을 자주 놓쳐.
+[명령] 자격증명, 접수 기간, 시험일, 발표일을 입력하면 타임라인으로 보여주고 접수 시작 7일 전에 강조 표시해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 가로 타임라인.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="career" data-q="자소서 글자 수 체커 자소서 문항마다 글자 수 제한이 달라서 계속 세어봐야 해. 문항별로 제한 글자 수를 정하고 답변을 쓰면 공백 포함·제외 글자 수와 바이트 수를 실시간으로 보여주고, 초과하면 빨갛게 표시해줘."><summary><span class="no">043</span><span class="ct">자소서 글자 수 체커</span><span class="cc">진로·취업</span></summary><pre>[역할] 너는 대학생 취업 준비를 돕는 커리어 서비스 개발자야.
+[맥락] 자소서 문항마다 글자 수 제한이 달라서 계속 세어봐야 해.
+[명령] 문항별로 제한 글자 수를 정하고 답변을 쓰면 공백 포함·제외 글자 수와 바이트 수를 실시간으로 보여주고, 초과하면 빨갛게 표시해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 문항 탭, 하단 글자 수 바.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="career" data-q="면접 질문 연습기 면접 때 말이 막혀서 연습이 필요해. 예상 질문 목록을 넣으면 무작위로 하나씩 보여주고, 60초 타이머가 돌아가는 동안 답한 뒤 스스로 점수(1~5)와 메모를 남기게 해줘."><summary><span class="no">044</span><span class="ct">면접 질문 연습기</span><span class="cc">진로·취업</span></summary><pre>[역할] 너는 대학생 취업 준비를 돕는 커리어 서비스 개발자야.
+[맥락] 면접 때 말이 막혀서 연습이 필요해.
+[명령] 예상 질문 목록을 넣으면 무작위로 하나씩 보여주고, 60초 타이머가 돌아가는 동안 답한 뒤 스스로 점수(1~5)와 메모를 남기게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 질문 카드, 원형 타이머.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="career" data-q="지원 현황 칸반보드 여러 회사에 지원하다 보니 어디가 어떤 단계인지 헷갈려. 회사명, 직무, 마감일을 카드로 만들고 관심·지원·서류 합격·면접·결과 칸으로 드래그해서 옮길 수 있는 칸반보드를 만들어줘."><summary><span class="no">045</span><span class="ct">지원 현황 칸반보드</span><span class="cc">진로·취업</span></summary><pre>[역할] 너는 대학생 취업 준비를 돕는 커리어 서비스 개발자야.
+[맥락] 여러 회사에 지원하다 보니 어디가 어떤 단계인지 헷갈려.
+[명령] 회사명, 직무, 마감일을 카드로 만들고 관심·지원·서류 합격·면접·결과 칸으로 드래그해서 옮길 수 있는 칸반보드를 만들어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 칸별 카드 수 표시.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="career" data-q="포트폴리오 한 페이지 간단한 개인 포트폴리오 페이지가 있으면 좋겠어. 내 이름, 한 줄 소개, 기술, 프로젝트 3개(제목, 설명, 링크)를 넣은 반응형 포트폴리오 페이지를 만들어줘."><summary><span class="no">046</span><span class="ct">포트폴리오 한 페이지</span><span class="cc">진로·취업</span></summary><pre>[역할] 너는 대학생 취업 준비를 돕는 커리어 서비스 개발자야.
+[맥락] 간단한 개인 포트폴리오 페이지가 있으면 좋겠어.
+[명령] 내 이름, 한 줄 소개, 기술, 프로젝트 3개(제목, 설명, 링크)를 넣은 반응형 포트폴리오 페이지를 만들어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 깔끔한 단일 페이지, 프로젝트 카드.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="career" data-q="직무 적성 미니 테스트 어떤 직무가 나에게 맞는지 감이 안 와. 질문 12개에 답하면 기획·개발·디자인·영업·연구 성향 점수를 계산해 레이더 차트로 보여주고, 각 직무 설명을 붙여줘."><summary><span class="no">047</span><span class="ct">직무 적성 미니 테스트</span><span class="cc">진로·취업</span></summary><pre>[역할] 너는 대학생 취업 준비를 돕는 커리어 서비스 개발자야.
+[맥락] 어떤 직무가 나에게 맞는지 감이 안 와.
+[명령] 질문 12개에 답하면 기획·개발·디자인·영업·연구 성향 점수를 계산해 레이더 차트로 보여주고, 각 직무 설명을 붙여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 질문 진행 막대, 결과 레이더 차트.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="career" data-q="연봉 실수령액 계산기 채용 공고의 연봉이 실제로 월 얼마인지 궁금해. 연봉을 입력하면 4대보험과 소득세를 대략 반영한 월 실수령액을 계산하고, 항목별 공제 내역을 보여줘. 계산은 추정치라고 안내 문구를 넣어줘."><summary><span class="no">048</span><span class="ct">연봉 실수령액 계산기</span><span class="cc">진로·취업</span></summary><pre>[역할] 너는 대학생 취업 준비를 돕는 커리어 서비스 개발자야.
+[맥락] 채용 공고의 연봉이 실제로 월 얼마인지 궁금해.
+[명령] 연봉을 입력하면 4대보험과 소득세를 대략 반영한 월 실수령액을 계산하고, 항목별 공제 내역을 보여줘. 계산은 추정치라고 안내 문구를 넣어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 결과 카드, 공제 내역 표.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="career" data-q="인턴십 회고 노트 인턴을 하면서 배운 걸 기록해두지 않으면 자소서 쓸 때 기억이 안 나. 주차별로 한 일, 배운 점, 성과(숫자), 어려웠던 점을 기록하고, 나중에 star 형식(상황, 과제, 행동, 결과)으로 모아 볼 수 있게 해줘."><summary><span class="no">049</span><span class="ct">인턴십 회고 노트</span><span class="cc">진로·취업</span></summary><pre>[역할] 너는 대학생 취업 준비를 돕는 커리어 서비스 개발자야.
+[맥락] 인턴을 하면서 배운 걸 기록해두지 않으면 자소서 쓸 때 기억이 안 나.
+[명령] 주차별로 한 일, 배운 점, 성과(숫자), 어려웠던 점을 기록하고, 나중에 STAR 형식(상황, 과제, 행동, 결과)으로 모아 볼 수 있게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 주차 카드, STAR 보기 전환.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="career" data-q="네트워킹 명함첩 행사에서 만난 선배와 현직자 정보를 정리하고 싶어. 이름, 회사, 직무, 만난 곳, 대화 메모, 다음 연락일을 저장하는 명함첩을 만들고, 연락할 날이 된 사람을 위에 보여줘."><summary><span class="no">050</span><span class="ct">네트워킹 명함첩</span><span class="cc">진로·취업</span></summary><pre>[역할] 너는 대학생 취업 준비를 돕는 커리어 서비스 개발자야.
+[맥락] 행사에서 만난 선배와 현직자 정보를 정리하고 싶어.
+[명령] 이름, 회사, 직무, 만난 곳, 대화 메모, 다음 연락일을 저장하는 명함첩을 만들고, 연락할 날이 된 사람을 위에 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 카드 목록, 검색창.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="team" data-q="팀플 역할 분배 룰렛 팀플 첫 회의 때 역할 정하기가 늘 어색해. 팀원 이름과 역할(자료조사, ppt, 발표, 보고서)을 입력하고 룰렛을 돌리면 공정하게 역할이 배정되게 해줘. 다시 돌리기 횟수를 기록해줘."><summary><span class="no">051</span><span class="ct">팀플 역할 분배 룰렛</span><span class="cc">팀플·동아리</span></summary><pre>[역할] 너는 대학생 팀 프로젝트와 동아리 운영을 돕는 협업 도구 개발자야.
+[맥락] 팀플 첫 회의 때 역할 정하기가 늘 어색해.
+[명령] 팀원 이름과 역할(자료조사, PPT, 발표, 보고서)을 입력하고 룰렛을 돌리면 공정하게 역할이 배정되게 해줘. 다시 돌리기 횟수를 기록해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 회전하는 룰렛 애니메이션.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="team" data-q="회의록 템플릿 팀플 회의를 해도 결정된 게 뭔지 나중에 기억이 안 나. 날짜, 참석자, 안건, 결정사항, 할 일(담당자·마감)을 입력하는 회의록을 만들고, 단톡방에 붙여넣을 요약 텍스트를 버튼 하나로 만들어줘."><summary><span class="no">052</span><span class="ct">회의록 템플릿</span><span class="cc">팀플·동아리</span></summary><pre>[역할] 너는 대학생 팀 프로젝트와 동아리 운영을 돕는 협업 도구 개발자야.
+[맥락] 팀플 회의를 해도 결정된 게 뭔지 나중에 기억이 안 나.
+[명령] 날짜, 참석자, 안건, 결정사항, 할 일(담당자·마감)을 입력하는 회의록을 만들고, 단톡방에 붙여넣을 요약 텍스트를 버튼 하나로 만들어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 요약 복사 버튼.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="team" data-q="기여도 평가표 팀플이 끝나면 동료평가를 해야 하는데 기준이 애매해. 팀원별로 참여, 책임감, 결과물 기여, 소통을 1~5점으로 평가하고 근거를 적으면 평균과 항목별 점수를 표로 보여줘."><summary><span class="no">053</span><span class="ct">기여도 평가표</span><span class="cc">팀플·동아리</span></summary><pre>[역할] 너는 대학생 팀 프로젝트와 동아리 운영을 돕는 협업 도구 개발자야.
+[맥락] 팀플이 끝나면 동료평가를 해야 하는데 기준이 애매해.
+[명령] 팀원별로 참여, 책임감, 결과물 기여, 소통을 1~5점으로 평가하고 근거를 적으면 평균과 항목별 점수를 표로 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 팀원별 행, 평균 열.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="team" data-q="회의 시간 찾기 팀원 5명이 다 되는 시간을 찾기가 너무 어려워. 팀원별로 가능한 시간을 주간 격자에서 클릭해 표시하면, 모두 가능한 시간은 진하게, 한 명만 안 되는 시간은 연하게 보여줘."><summary><span class="no">054</span><span class="ct">회의 시간 찾기</span><span class="cc">팀플·동아리</span></summary><pre>[역할] 너는 대학생 팀 프로젝트와 동아리 운영을 돕는 협업 도구 개발자야.
+[맥락] 팀원 5명이 다 되는 시간을 찾기가 너무 어려워.
+[명령] 팀원별로 가능한 시간을 주간 격자에서 클릭해 표시하면, 모두 가능한 시간은 진하게, 한 명만 안 되는 시간은 연하게 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 주간 격자 히트맵.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="team" data-q="발표 순서 랜덤 추첨기 조별 발표 순서를 공정하게 정하고 싶어. 조 이름을 입력하면 카드가 섞이는 애니메이션 후 발표 순서를 보여주고, 결과를 복사할 수 있게 해줘."><summary><span class="no">055</span><span class="ct">발표 순서 랜덤 추첨기</span><span class="cc">팀플·동아리</span></summary><pre>[역할] 너는 대학생 팀 프로젝트와 동아리 운영을 돕는 협업 도구 개발자야.
+[맥락] 조별 발표 순서를 공정하게 정하고 싶어.
+[명령] 조 이름을 입력하면 카드가 섞이는 애니메이션 후 발표 순서를 보여주고, 결과를 복사할 수 있게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 섞이는 카드 연출.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="team" data-q="동아리 회비 장부 동아리 총무를 맡았는데 회비 관리가 복잡해. 회원별 회비 납부 여부와 지출 내역(날짜, 항목, 금액, 영수증 여부)을 기록하면 잔액과 미납자 목록을 보여줘."><summary><span class="no">056</span><span class="ct">동아리 회비 장부</span><span class="cc">팀플·동아리</span></summary><pre>[역할] 너는 대학생 팀 프로젝트와 동아리 운영을 돕는 협업 도구 개발자야.
+[맥락] 동아리 총무를 맡았는데 회비 관리가 복잡해.
+[명령] 회원별 회비 납부 여부와 지출 내역(날짜, 항목, 금액, 영수증 여부)을 기록하면 잔액과 미납자 목록을 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 수입·지출 탭, 잔액 카드.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="team" data-q="행사 체크리스트 동아리 mt를 준비하는데 빠뜨리는 게 많아. 행사 준비 항목을 d-14, d-7, d-1, 당일로 나눠 담당자와 함께 체크하는 리스트를 만들어줘. 완료율을 단계별로 보여줘."><summary><span class="no">057</span><span class="ct">행사 체크리스트</span><span class="cc">팀플·동아리</span></summary><pre>[역할] 너는 대학생 팀 프로젝트와 동아리 운영을 돕는 협업 도구 개발자야.
+[맥락] 동아리 MT를 준비하는데 빠뜨리는 게 많아.
+[명령] 행사 준비 항목을 D-14, D-7, D-1, 당일로 나눠 담당자와 함께 체크하는 리스트를 만들어줘. 완료율을 단계별로 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 단계별 접이식 목록.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="team" data-q="투표 앱 동아리에서 회식 장소를 정할 때 단톡 투표가 헷갈려. 질문과 선택지를 만들고 이름과 함께 투표하면 실시간 결과 막대를 보여주고, 중복 투표를 막아줘."><summary><span class="no">058</span><span class="ct">투표 앱</span><span class="cc">팀플·동아리</span></summary><pre>[역할] 너는 대학생 팀 프로젝트와 동아리 운영을 돕는 협업 도구 개발자야.
+[맥락] 동아리에서 회식 장소를 정할 때 단톡 투표가 헷갈려.
+[명령] 질문과 선택지를 만들고 이름과 함께 투표하면 실시간 결과 막대를 보여주고, 중복 투표를 막아줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 결과 막대, 1위 강조.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="team" data-q="팀 프로젝트 간트 차트 프로젝트 일정이 어떻게 겹치는지 보이지 않아. 작업명, 담당자, 시작일, 종료일을 입력하면 간트 차트로 그려주고, 오늘 날짜에 세로선을 표시해줘."><summary><span class="no">059</span><span class="ct">팀 프로젝트 간트 차트</span><span class="cc">팀플·동아리</span></summary><pre>[역할] 너는 대학생 팀 프로젝트와 동아리 운영을 돕는 협업 도구 개발자야.
+[맥락] 프로젝트 일정이 어떻게 겹치는지 보이지 않아.
+[명령] 작업명, 담당자, 시작일, 종료일을 입력하면 간트 차트로 그려주고, 오늘 날짜에 세로선을 표시해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 담당자별 색, 오늘선.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="team" data-q="팀 아이디어 보드 브레인스토밍을 하면 좋은 아이디어가 묻혀버려. 아이디어를 포스트잇처럼 붙이고 좋아요를 누를 수 있는 보드를 만들어줘. 좋아요 순으로 정렬하는 버튼도 넣어줘."><summary><span class="no">060</span><span class="ct">팀 아이디어 보드</span><span class="cc">팀플·동아리</span></summary><pre>[역할] 너는 대학생 팀 프로젝트와 동아리 운영을 돕는 협업 도구 개발자야.
+[맥락] 브레인스토밍을 하면 좋은 아이디어가 묻혀버려.
+[명령] 아이디어를 포스트잇처럼 붙이고 좋아요를 누를 수 있는 보드를 만들어줘. 좋아요 순으로 정렬하는 버튼도 넣어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 알록달록 포스트잇 격자.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="major" data-q="수요·공급 그래프 놀이터 경제원론에서 수요와 공급 곡선 이동이 잘 이해가 안 돼. 수요·공급 곡선을 그리고 슬라이더로 소득, 원자재 가격, 세금을 바꾸면 곡선이 이동하며 균형 가격과 거래량이 바뀌는 시뮬레이터를 만들어줘."><summary><span class="no">061</span><span class="ct">수요·공급 그래프 놀이터</span><span class="cc">전공 개념 시뮬레이터</span></summary><pre>[역할] 너는 어려운 대학 전공 개념을 눈으로 보여주는 교육용 시뮬레이션 개발자야.
+[맥락] 경제원론에서 수요와 공급 곡선 이동이 잘 이해가 안 돼.
+[명령] 수요·공급 곡선을 그리고 슬라이더로 소득, 원자재 가격, 세금을 바꾸면 곡선이 이동하며 균형 가격과 거래량이 바뀌는 시뮬레이터를 만들어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 그래프 위 균형점 표시, 변화 설명 한 줄.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="major" data-q="복리 계산 시각화 단리와 복리의 차이를 숫자로만 보니 감이 안 와. 원금, 연이율, 기간을 슬라이더로 바꾸면 단리와 복리의 잔액 변화를 같은 그래프에 그려주고 차이 금액을 보여줘."><summary><span class="no">062</span><span class="ct">복리 계산 시각화</span><span class="cc">전공 개념 시뮬레이터</span></summary><pre>[역할] 너는 어려운 대학 전공 개념을 눈으로 보여주는 교육용 시뮬레이션 개발자야.
+[맥락] 단리와 복리의 차이를 숫자로만 보니 감이 안 와.
+[명령] 원금, 연이율, 기간을 슬라이더로 바꾸면 단리와 복리의 잔액 변화를 같은 그래프에 그려주고 차이 금액을 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 두 선 그래프, 차이 강조.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="major" data-q="확률 시뮬레이터 통계 수업에서 큰 수의 법칙이 와닿지 않아. 동전과 주사위를 1회, 100회, 10,000회 던지는 버튼을 만들고, 결과 비율이 이론 확률에 가까워지는 과정을 그래프로 보여줘."><summary><span class="no">063</span><span class="ct">확률 시뮬레이터</span><span class="cc">전공 개념 시뮬레이터</span></summary><pre>[역할] 너는 어려운 대학 전공 개념을 눈으로 보여주는 교육용 시뮬레이션 개발자야.
+[맥락] 통계 수업에서 큰 수의 법칙이 와닿지 않아.
+[명령] 동전과 주사위를 1회, 100회, 10,000회 던지는 버튼을 만들고, 결과 비율이 이론 확률에 가까워지는 과정을 그래프로 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 막대그래프, 이론값 점선.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="major" data-q="정규분포 탐험기 평균과 표준편차가 바뀌면 분포가 어떻게 변하는지 보고 싶어. 평균과 표준편차 슬라이더로 정규분포 곡선을 바꾸고, 구간을 지정하면 그 구간의 확률(넓이)을 색칠해 보여줘."><summary><span class="no">064</span><span class="ct">정규분포 탐험기</span><span class="cc">전공 개념 시뮬레이터</span></summary><pre>[역할] 너는 어려운 대학 전공 개념을 눈으로 보여주는 교육용 시뮬레이션 개발자야.
+[맥락] 평균과 표준편차가 바뀌면 분포가 어떻게 변하는지 보고 싶어.
+[명령] 평균과 표준편차 슬라이더로 정규분포 곡선을 바꾸고, 구간을 지정하면 그 구간의 확률(넓이)을 색칠해 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 곡선 아래 색칠, 확률 %.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="major" data-q="정렬 알고리즘 시각화 버블 정렬과 퀵 정렬이 어떻게 다른지 눈으로 보고 싶어. 무작위 막대를 만들고 버블·선택·퀵 정렬을 선택하면 비교하고 교환하는 과정을 애니메이션으로 보여주며 비교 횟수를 세줘."><summary><span class="no">065</span><span class="ct">정렬 알고리즘 시각화</span><span class="cc">전공 개념 시뮬레이터</span></summary><pre>[역할] 너는 어려운 대학 전공 개념을 눈으로 보여주는 교육용 시뮬레이션 개발자야.
+[맥락] 버블 정렬과 퀵 정렬이 어떻게 다른지 눈으로 보고 싶어.
+[명령] 무작위 막대를 만들고 버블·선택·퀵 정렬을 선택하면 비교하고 교환하는 과정을 애니메이션으로 보여주며 비교 횟수를 세줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 속도 조절 슬라이더.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="major" data-q="포물선 운동 시뮬레이터 물리 수업의 포물선 운동 공식이 머리에 안 들어와. 발사 각도와 속도, 중력 값을 바꾸면 공이 날아가는 궤적을 그리고 최고 높이와 비행 거리를 계산해줘."><summary><span class="no">066</span><span class="ct">포물선 운동 시뮬레이터</span><span class="cc">전공 개념 시뮬레이터</span></summary><pre>[역할] 너는 어려운 대학 전공 개념을 눈으로 보여주는 교육용 시뮬레이션 개발자야.
+[맥락] 물리 수업의 포물선 운동 공식이 머리에 안 들어와.
+[명령] 발사 각도와 속도, 중력 값을 바꾸면 공이 날아가는 궤적을 그리고 최고 높이와 비행 거리를 계산해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 궤적 잔상, 결과 수치 카드.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="major" data-q="화학 몰 계산기 일반화학 몰 계산 문제를 풀 때마다 헷갈려. 원소 기호로 화학식을 입력하면 몰 질량을 계산하고, 질량·몰수·분자 수 중 하나를 넣으면 나머지를 환산해줘. 계산 과정을 단계별로 보여줘."><summary><span class="no">067</span><span class="ct">화학 몰 계산기</span><span class="cc">전공 개념 시뮬레이터</span></summary><pre>[역할] 너는 어려운 대학 전공 개념을 눈으로 보여주는 교육용 시뮬레이션 개발자야.
+[맥락] 일반화학 몰 계산 문제를 풀 때마다 헷갈려.
+[명령] 원소 기호로 화학식을 입력하면 몰 질량을 계산하고, 질량·몰수·분자 수 중 하나를 넣으면 나머지를 환산해줘. 계산 과정을 단계별로 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 단계별 풀이 펼치기.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="major" data-q="세포 분열 단계 학습기 체세포 분열 단계 순서를 자꾸 헷갈려. 간기부터 말기까지 단계를 그림과 설명 카드로 보여주고, 섞인 카드를 올바른 순서로 맞추는 퀴즈 모드도 넣어줘."><summary><span class="no">068</span><span class="ct">세포 분열 단계 학습기</span><span class="cc">전공 개념 시뮬레이터</span></summary><pre>[역할] 너는 어려운 대학 전공 개념을 눈으로 보여주는 교육용 시뮬레이션 개발자야.
+[맥락] 체세포 분열 단계 순서를 자꾸 헷갈려.
+[명령] 간기부터 말기까지 단계를 그림과 설명 카드로 보여주고, 섞인 카드를 올바른 순서로 맞추는 퀴즈 모드도 넣어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 단계별 단순한 그림, 드래그 정렬.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="major" data-q="손실 회피 실험실 행동경제학의 손실 회피를 직접 체험해 보고 싶어. 같은 기댓값의 선택지를 이득 프레임과 손실 프레임으로 번갈아 제시해 내 선택을 기록하고, 끝나면 내가 손실을 얼마나 피했는지 결과를 보여줘."><summary><span class="no">069</span><span class="ct">손실 회피 실험실</span><span class="cc">전공 개념 시뮬레이터</span></summary><pre>[역할] 너는 어려운 대학 전공 개념을 눈으로 보여주는 교육용 시뮬레이션 개발자야.
+[맥락] 행동경제학의 손실 회피를 직접 체험해 보고 싶어.
+[명령] 같은 기댓값의 선택지를 이득 프레임과 손실 프레임으로 번갈아 제시해 내 선택을 기록하고, 끝나면 내가 손실을 얼마나 피했는지 결과를 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 질문 10개, 결과 요약 카드.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="major" data-q="회로 옴의 법칙 계산기 전기회로 과목에서 직렬·병렬 저항 계산이 헷갈려. 저항을 직렬 또는 병렬로 추가하면 회로도를 간단히 그리고 합성 저항, 전류, 각 저항의 전압을 계산해줘."><summary><span class="no">070</span><span class="ct">회로 옴의 법칙 계산기</span><span class="cc">전공 개념 시뮬레이터</span></summary><pre>[역할] 너는 어려운 대학 전공 개념을 눈으로 보여주는 교육용 시뮬레이션 개발자야.
+[맥락] 전기회로 과목에서 직렬·병렬 저항 계산이 헷갈려.
+[명령] 저항을 직렬 또는 병렬로 추가하면 회로도를 간단히 그리고 합성 저항, 전류, 각 저항의 전압을 계산해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 간단한 회로도, 결과 표.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="campus" data-q="오늘 뭐 먹지 룰렛 학교 앞에서 점심 메뉴를 고르는 데 10분씩 걸려. 자주 가는 식당과 메뉴, 가격대를 입력하면 룰렛으로 골라주고, 최근 3일 안에 먹은 메뉴는 빼고 돌릴 수 있게 해줘."><summary><span class="no">071</span><span class="ct">오늘 뭐 먹지 룰렛</span><span class="cc">캠퍼스 생활</span></summary><pre>[역할] 너는 부산대학교 학생들의 캠퍼스 생활을 돕는 앱 개발자야.
+[맥락] 학교 앞에서 점심 메뉴를 고르는 데 10분씩 걸려.
+[명령] 자주 가는 식당과 메뉴, 가격대를 입력하면 룰렛으로 골라주고, 최근 3일 안에 먹은 메뉴는 빼고 돌릴 수 있게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 룰렛 애니메이션, 가격대 필터.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="campus" data-q="강의실 이동 시간 계산기 연강일 때 건물 사이 이동 시간이 빠듯한지 알고 싶어. 건물 목록과 건물 사이 도보 시간을 입력해두면, 내 시간표에서 연강 사이 이동이 쉬는 시간 안에 가능한지 표시해줘."><summary><span class="no">072</span><span class="ct">강의실 이동 시간 계산기</span><span class="cc">캠퍼스 생활</span></summary><pre>[역할] 너는 부산대학교 학생들의 캠퍼스 생활을 돕는 앱 개발자야.
+[맥락] 연강일 때 건물 사이 이동 시간이 빠듯한지 알고 싶어.
+[명령] 건물 목록과 건물 사이 도보 시간을 입력해두면, 내 시간표에서 연강 사이 이동이 쉬는 시간 안에 가능한지 표시해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 위험 구간 빨간 표시.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="campus" data-q="도서관 좌석 메모 도서관에서 자주 앉는 자리와 콘센트 위치를 기억하고 싶어. 층과 열람실별로 좋아하는 좌석 번호와 특징(콘센트, 창가, 조용함)을 메모하고 태그로 검색할 수 있게 해줘."><summary><span class="no">073</span><span class="ct">도서관 좌석 메모</span><span class="cc">캠퍼스 생활</span></summary><pre>[역할] 너는 부산대학교 학생들의 캠퍼스 생활을 돕는 앱 개발자야.
+[맥락] 도서관에서 자주 앉는 자리와 콘센트 위치를 기억하고 싶어.
+[명령] 층과 열람실별로 좋아하는 좌석 번호와 특징(콘센트, 창가, 조용함)을 메모하고 태그로 검색할 수 있게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 태그 칩 필터.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="campus" data-q="셔틀·버스 시간 알리미 학교 앞 버스 시간을 매번 찾아보기 귀찮아. 내가 타는 버스 노선과 시간표를 입력하면 지금 시각 기준 다음 버스 3대까지 남은 시간을 보여줘."><summary><span class="no">074</span><span class="ct">셔틀·버스 시간 알리미</span><span class="cc">캠퍼스 생활</span></summary><pre>[역할] 너는 부산대학교 학생들의 캠퍼스 생활을 돕는 앱 개발자야.
+[맥락] 학교 앞 버스 시간을 매번 찾아보기 귀찮아.
+[명령] 내가 타는 버스 노선과 시간표를 입력하면 지금 시각 기준 다음 버스 3대까지 남은 시간을 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 큰 숫자 카운트다운.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="campus" data-q="졸업 요건 체크기 졸업까지 교양과 전공 학점이 얼마나 남았는지 헷갈려. 졸업 요건(전공 필수, 전공 선택, 교양 영역별 학점)을 입력하고 이수 과목을 추가하면 영역별 남은 학점을 보여줘."><summary><span class="no">075</span><span class="ct">졸업 요건 체크기</span><span class="cc">캠퍼스 생활</span></summary><pre>[역할] 너는 부산대학교 학생들의 캠퍼스 생활을 돕는 앱 개발자야.
+[맥락] 졸업까지 교양과 전공 학점이 얼마나 남았는지 헷갈려.
+[명령] 졸업 요건(전공 필수, 전공 선택, 교양 영역별 학점)을 입력하고 이수 과목을 추가하면 영역별 남은 학점을 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 영역별 진행 막대.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="campus" data-q="수강신청 시뮬레이터 수강신청 날 클릭이 늦어서 원하는 과목을 놓쳐. 희망 과목 1~3순위를 입력하고 시작 버튼을 누르면 카운트다운 후 버튼이 나타나 클릭 반응 속도를 재주는 연습 게임을 만들어줘."><summary><span class="no">076</span><span class="ct">수강신청 시뮬레이터</span><span class="cc">캠퍼스 생활</span></summary><pre>[역할] 너는 부산대학교 학생들의 캠퍼스 생활을 돕는 앱 개발자야.
+[맥락] 수강신청 날 클릭이 늦어서 원하는 과목을 놓쳐.
+[명령] 희망 과목 1~3순위를 입력하고 시작 버튼을 누르면 카운트다운 후 버튼이 나타나 클릭 반응 속도를 재주는 연습 게임을 만들어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 반응 속도 기록 순위.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="campus" data-q="축제 부스 지도 학교 축제 때 부스가 어디 있는지 찾기 어려워. 간단한 격자 지도에 부스 이름, 종류(음식, 체험, 공연), 운영 시간을 핀으로 추가하고, 종류별로 필터해서 볼 수 있게 해줘."><summary><span class="no">077</span><span class="ct">축제 부스 지도</span><span class="cc">캠퍼스 생활</span></summary><pre>[역할] 너는 부산대학교 학생들의 캠퍼스 생활을 돕는 앱 개발자야.
+[맥락] 학교 축제 때 부스가 어디 있는지 찾기 어려워.
+[명령] 간단한 격자 지도에 부스 이름, 종류(음식, 체험, 공연), 운영 시간을 핀으로 추가하고, 종류별로 필터해서 볼 수 있게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 색깔 핀, 목록과 지도 동시 보기.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="campus" data-q="분실물 게시판 강의실에 두고 온 물건을 찾을 방법이 없어. 물건 이름, 발견 장소, 날짜, 특징을 등록하고 검색하는 분실물 게시판 화면을 만들어줘. 찾음 처리 버튼도 넣어줘."><summary><span class="no">078</span><span class="ct">분실물 게시판</span><span class="cc">캠퍼스 생활</span></summary><pre>[역할] 너는 부산대학교 학생들의 캠퍼스 생활을 돕는 앱 개발자야.
+[맥락] 강의실에 두고 온 물건을 찾을 방법이 없어.
+[명령] 물건 이름, 발견 장소, 날짜, 특징을 등록하고 검색하는 분실물 게시판 화면을 만들어줘. 찾음 처리 버튼도 넣어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 카드 목록, 상태 배지.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="campus" data-q="새내기 캠퍼스 빙고 신입생 때 학교를 빨리 알고 싶어. 도서관 가기, 학식 먹기, 동아리 박람회 가기 같은 5×5 빙고판을 만들고 칸을 누르면 칠해지며 빙고 줄 수를 세줘."><summary><span class="no">079</span><span class="ct">새내기 캠퍼스 빙고</span><span class="cc">캠퍼스 생활</span></summary><pre>[역할] 너는 부산대학교 학생들의 캠퍼스 생활을 돕는 앱 개발자야.
+[맥락] 신입생 때 학교를 빨리 알고 싶어.
+[명령] 도서관 가기, 학식 먹기, 동아리 박람회 가기 같은 5×5 빙고판을 만들고 칸을 누르면 칠해지며 빙고 줄 수를 세줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 빙고 완성 시 축하 효과.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="campus" data-q="학기 회고 카드 학기가 끝나면 뭘 했는지 정리하고 싶어. 이번 학기 잘한 것, 아쉬운 것, 배운 것, 다음 학기 목표를 질문 순서대로 답하면 한 장짜리 회고 카드로 정리해줘."><summary><span class="no">080</span><span class="ct">학기 회고 카드</span><span class="cc">캠퍼스 생활</span></summary><pre>[역할] 너는 부산대학교 학생들의 캠퍼스 생활을 돕는 앱 개발자야.
+[맥락] 학기가 끝나면 뭘 했는지 정리하고 싶어.
+[명령] 이번 학기 잘한 것, 아쉬운 것, 배운 것, 다음 학기 목표를 질문 순서대로 답하면 한 장짜리 회고 카드로 정리해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. SNS 공유하기 좋은 카드 디자인.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="fun" data-q="타자 연습 게임 리포트를 쓰는데 타자가 느려서 시간이 오래 걸려. 한국어 문장이 하나씩 나오면 따라 치게 하고, 타수(분당 글자 수)와 정확도를 계산해 최고 기록을 저장해줘."><summary><span class="no">081</span><span class="ct">타자 연습 게임</span><span class="cc">놀이·게임</span></summary><pre>[역할] 너는 간단하지만 중독성 있는 웹 게임을 만드는 게임 개발자야.
+[맥락] 리포트를 쓰는데 타자가 느려서 시간이 오래 걸려.
+[명령] 한국어 문장이 하나씩 나오면 따라 치게 하고, 타수(분당 글자 수)와 정확도를 계산해 최고 기록을 저장해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 틀린 글자 빨간 표시.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="fun" data-q="기억력 카드 뒤집기 쉬는 시간에 머리를 식힐 간단한 게임이 필요해. 4×4 카드 짝 맞추기 게임을 만들고, 걸린 시간과 시도 횟수를 기록해줘. 카드 그림은 이모지로 해줘."><summary><span class="no">082</span><span class="ct">기억력 카드 뒤집기</span><span class="cc">놀이·게임</span></summary><pre>[역할] 너는 간단하지만 중독성 있는 웹 게임을 만드는 게임 개발자야.
+[맥락] 쉬는 시간에 머리를 식힐 간단한 게임이 필요해.
+[명령] 4×4 카드 짝 맞추기 게임을 만들고, 걸린 시간과 시도 횟수를 기록해줘. 카드 그림은 이모지로 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 뒤집기 애니메이션, 최고 기록.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="fun" data-q="초성 퀴즈 친구들과 mt에서 할 게임이 필요해. 단어 목록을 입력하면 초성만 보여주고 정답을 맞히면 점수를 주는 게임을 만들어줘. 제한 시간 10초와 힌트 버튼을 넣어줘."><summary><span class="no">083</span><span class="ct">초성 퀴즈</span><span class="cc">놀이·게임</span></summary><pre>[역할] 너는 간단하지만 중독성 있는 웹 게임을 만드는 게임 개발자야.
+[맥락] 친구들과 MT에서 할 게임이 필요해.
+[명령] 단어 목록을 입력하면 초성만 보여주고 정답을 맞히면 점수를 주는 게임을 만들어줘. 제한 시간 10초와 힌트 버튼을 넣어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 큰 초성 글자, 점수판.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="fun" data-q="반응 속도 측정기 내 반응 속도가 얼마나 빠른지 궁금해. 화면이 빨강에서 초록으로 바뀌는 순간 클릭하면 반응 시간을 ms로 재고, 5회 평균과 기록 등급을 보여줘."><summary><span class="no">084</span><span class="ct">반응 속도 측정기</span><span class="cc">놀이·게임</span></summary><pre>[역할] 너는 간단하지만 중독성 있는 웹 게임을 만드는 게임 개발자야.
+[맥락] 내 반응 속도가 얼마나 빠른지 궁금해.
+[명령] 화면이 빨강에서 초록으로 바뀌는 순간 클릭하면 반응 시간을 ms로 재고, 5회 평균과 기록 등급을 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 전체 화면 색 전환.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="fun" data-q="숫자 야구 간단한 추리 게임을 해보고 싶어. 컴퓨터가 정한 서로 다른 3자리 숫자를 스트라이크와 볼 힌트로 맞히는 숫자 야구 게임을 만들어줘. 시도 기록을 표로 보여줘."><summary><span class="no">085</span><span class="ct">숫자 야구</span><span class="cc">놀이·게임</span></summary><pre>[역할] 너는 간단하지만 중독성 있는 웹 게임을 만드는 게임 개발자야.
+[맥락] 간단한 추리 게임을 해보고 싶어.
+[명령] 컴퓨터가 정한 서로 다른 3자리 숫자를 스트라이크와 볼 힌트로 맞히는 숫자 야구 게임을 만들어줘. 시도 기록을 표로 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 시도 기록 표, 정답 시 축하 효과.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="fun" data-q="나만의 밸런스 게임 동아리 친목 시간에 할 밸런스 게임 질문이 필요해. 두 선택지 질문을 여러 개 만들고, 하나씩 보여주며 참가자들이 고른 결과를 집계해 비율로 보여줘."><summary><span class="no">086</span><span class="ct">나만의 밸런스 게임</span><span class="cc">놀이·게임</span></summary><pre>[역할] 너는 간단하지만 중독성 있는 웹 게임을 만드는 게임 개발자야.
+[맥락] 동아리 친목 시간에 할 밸런스 게임 질문이 필요해.
+[명령] 두 선택지 질문을 여러 개 만들고, 하나씩 보여주며 참가자들이 고른 결과를 집계해 비율로 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 좌우 큰 버튼, 결과 비율 막대.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="fun" data-q="단어 끝말잇기 봇 혼자서도 끝말잇기를 하고 싶어. 미리 넣어둔 단어 목록으로 컴퓨터와 끝말잇기를 하는 게임을 만들어줘. 이미 쓴 단어와 규칙 위반을 검사해줘."><summary><span class="no">087</span><span class="ct">단어 끝말잇기 봇</span><span class="cc">놀이·게임</span></summary><pre>[역할] 너는 간단하지만 중독성 있는 웹 게임을 만드는 게임 개발자야.
+[맥락] 혼자서도 끝말잇기를 하고 싶어.
+[명령] 미리 넣어둔 단어 목록으로 컴퓨터와 끝말잇기를 하는 게임을 만들어줘. 이미 쓴 단어와 규칙 위반을 검사해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 대화창 형식.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="fun" data-q="픽셀 아트 그림판 간단한 픽셀 그림을 그려서 프로필로 쓰고 싶어. 16×16 격자에 색을 골라 칠하는 픽셀 아트 그림판을 만들고, 지우개와 전체 지우기, png로 볼 수 있는 미리보기를 넣어줘."><summary><span class="no">088</span><span class="ct">픽셀 아트 그림판</span><span class="cc">놀이·게임</span></summary><pre>[역할] 너는 간단하지만 중독성 있는 웹 게임을 만드는 게임 개발자야.
+[맥락] 간단한 픽셀 그림을 그려서 프로필로 쓰고 싶어.
+[명령] 16×16 격자에 색을 골라 칠하는 픽셀 아트 그림판을 만들고, 지우개와 전체 지우기, PNG로 볼 수 있는 미리보기를 넣어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 팔레트 12색.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="fun" data-q="부산 사투리 퀴즈 다른 지역 친구들에게 부산 사투리를 알려주고 싶어. 부산 사투리 표현과 표준어 뜻 20개로 4지선다 퀴즈를 만들고, 끝나면 &#x27;부산 사람 지수&#x27;를 점수로 보여줘."><summary><span class="no">089</span><span class="ct">부산 사투리 퀴즈</span><span class="cc">놀이·게임</span></summary><pre>[역할] 너는 간단하지만 중독성 있는 웹 게임을 만드는 게임 개발자야.
+[맥락] 다른 지역 친구들에게 부산 사투리를 알려주고 싶어.
+[명령] 부산 사투리 표현과 표준어 뜻 20개로 4지선다 퀴즈를 만들고, 끝나면 &#x27;부산 사람 지수&#x27;를 점수로 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 재미있는 결과 등급 문구.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="fun" data-q="랜덤 팀 나누기 체육대회나 게임할 때 팀을 공정하게 나누고 싶어. 이름 목록과 팀 수를 입력하면 무작위로 팀을 나누고, 성별이나 실력 점수를 넣으면 균형 있게 나누는 옵션도 넣어줘."><summary><span class="no">090</span><span class="ct">랜덤 팀 나누기</span><span class="cc">놀이·게임</span></summary><pre>[역할] 너는 간단하지만 중독성 있는 웹 게임을 만드는 게임 개발자야.
+[맥락] 체육대회나 게임할 때 팀을 공정하게 나누고 싶어.
+[명령] 이름 목록과 팀 수를 입력하면 무작위로 팀을 나누고, 성별이나 실력 점수를 넣으면 균형 있게 나누는 옵션도 넣어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 팀별 색 카드.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="present" data-q="발표 리허설 타이머 발표 시간 5분을 자꾸 넘겨서 감점을 받아. 슬라이드 수와 총 발표 시간을 입력하면 슬라이드별 목표 시간을 나누고, 리허설 중 다음 슬라이드로 넘길 때마다 실제 시간을 기록해 초과 구간을 보여줘."><summary><span class="no">091</span><span class="ct">발표 리허설 타이머</span><span class="cc">발표·글쓰기·데이터</span></summary><pre>[역할] 너는 대학생의 발표와 글쓰기, 데이터 정리를 돕는 도구 개발자야.
+[맥락] 발표 시간 5분을 자꾸 넘겨서 감점을 받아.
+[명령] 슬라이드 수와 총 발표 시간을 입력하면 슬라이드별 목표 시간을 나누고, 리허설 중 다음 슬라이드로 넘길 때마다 실제 시간을 기록해 초과 구간을 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 큰 타이머, 슬라이드별 비교 표.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="present" data-q="텔레프롬프터 발표 대본을 보면서 자연스럽게 말하고 싶어. 대본을 붙여넣으면 글자가 일정 속도로 위로 흐르는 텔레프롬프터를 만들고, 속도와 글자 크기를 조절할 수 있게 해줘."><summary><span class="no">092</span><span class="ct">텔레프롬프터</span><span class="cc">발표·글쓰기·데이터</span></summary><pre>[역할] 너는 대학생의 발표와 글쓰기, 데이터 정리를 돕는 도구 개발자야.
+[맥락] 발표 대본을 보면서 자연스럽게 말하고 싶어.
+[명령] 대본을 붙여넣으면 글자가 일정 속도로 위로 흐르는 텔레프롬프터를 만들고, 속도와 글자 크기를 조절할 수 있게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 검은 배경, 큰 흰 글씨, 가운데 기준선.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="present" data-q="리포트 참고문헌 생성기 참고문헌 형식(apa)을 맞추는 게 너무 번거로워. 저자, 연도, 제목, 학술지명, 권호, 페이지를 입력하면 apa 형식 참고문헌을 만들어주고, 여러 개를 저자 순으로 정렬해 복사할 수 있게 해줘."><summary><span class="no">093</span><span class="ct">리포트 참고문헌 생성기</span><span class="cc">발표·글쓰기·데이터</span></summary><pre>[역할] 너는 대학생의 발표와 글쓰기, 데이터 정리를 돕는 도구 개발자야.
+[맥락] 참고문헌 형식(APA)을 맞추는 게 너무 번거로워.
+[명령] 저자, 연도, 제목, 학술지명, 권호, 페이지를 입력하면 APA 형식 참고문헌을 만들어주고, 여러 개를 저자 순으로 정렬해 복사할 수 있게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 형식 미리보기, 전체 복사 버튼.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="present" data-q="글쓰기 집중 모드 리포트를 쓸 때 다른 창을 자꾸 열게 돼. 목표 글자 수를 정하고 글을 쓰면 진행률 막대가 차오르고, 5분 동안 입력이 없으면 화면이 흐려지는 집중 글쓰기 앱을 만들어줘."><summary><span class="no">094</span><span class="ct">글쓰기 집중 모드</span><span class="cc">발표·글쓰기·데이터</span></summary><pre>[역할] 너는 대학생의 발표와 글쓰기, 데이터 정리를 돕는 도구 개발자야.
+[맥락] 리포트를 쓸 때 다른 창을 자꾸 열게 돼.
+[명령] 목표 글자 수를 정하고 글을 쓰면 진행률 막대가 차오르고, 5분 동안 입력이 없으면 화면이 흐려지는 집중 글쓰기 앱을 만들어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 전체 화면, 최소한의 메뉴.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="present" data-q="설문 결과 차트 메이커 팀플 설문 결과를 보기 좋은 그래프로 만들고 싶어. csv를 붙여넣으면 문항별 응답 수를 막대·원그래프로 자동으로 만들어주고, 그래프 제목과 색을 바꿀 수 있게 해줘."><summary><span class="no">095</span><span class="ct">설문 결과 차트 메이커</span><span class="cc">발표·글쓰기·데이터</span></summary><pre>[역할] 너는 대학생의 발표와 글쓰기, 데이터 정리를 돕는 도구 개발자야.
+[맥락] 팀플 설문 결과를 보기 좋은 그래프로 만들고 싶어.
+[명령] CSV를 붙여넣으면 문항별 응답 수를 막대·원그래프로 자동으로 만들어주고, 그래프 제목과 색을 바꿀 수 있게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 문항별 차트 카드.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="present" data-q="발표 피드백 수집기 발표 후 친구들에게 피드백을 받고 싶어. 내용, 전달력, 시각자료, 시간 준수를 별점으로 매기고 한 줄 의견을 남기는 피드백 폼과 평균 결과 화면을 만들어줘."><summary><span class="no">096</span><span class="ct">발표 피드백 수집기</span><span class="cc">발표·글쓰기·데이터</span></summary><pre>[역할] 너는 대학생의 발표와 글쓰기, 데이터 정리를 돕는 도구 개발자야.
+[맥락] 발표 후 친구들에게 피드백을 받고 싶어.
+[명령] 내용, 전달력, 시각자료, 시간 준수를 별점으로 매기고 한 줄 의견을 남기는 피드백 폼과 평균 결과 화면을 만들어줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 별점 입력, 결과 레이더 차트.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="present" data-q="단어 구름 메이커 인터뷰 답변에서 자주 나온 단어를 한눈에 보고 싶어. 텍스트를 붙여넣으면 조사를 대략 빼고 자주 나온 단어를 크기로 표현한 단어 구름과 상위 20개 빈도표를 보여줘."><summary><span class="no">097</span><span class="ct">단어 구름 메이커</span><span class="cc">발표·글쓰기·데이터</span></summary><pre>[역할] 너는 대학생의 발표와 글쓰기, 데이터 정리를 돕는 도구 개발자야.
+[맥락] 인터뷰 답변에서 자주 나온 단어를 한눈에 보고 싶어.
+[명령] 텍스트를 붙여넣으면 조사를 대략 빼고 자주 나온 단어를 크기로 표현한 단어 구름과 상위 20개 빈도표를 보여줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 단어 구름 + 빈도표.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="present" data-q="문장 다듬기 체크리스트 리포트 문장이 너무 길고 어색하다는 말을 들어. 글을 붙여넣으면 50자 넘는 긴 문장, 같은 단어 반복, &#x27;~것 같다&#x27; 같은 애매한 표현을 찾아 색으로 표시해줘."><summary><span class="no">098</span><span class="ct">문장 다듬기 체크리스트</span><span class="cc">발표·글쓰기·데이터</span></summary><pre>[역할] 너는 대학생의 발표와 글쓰기, 데이터 정리를 돕는 도구 개발자야.
+[맥락] 리포트 문장이 너무 길고 어색하다는 말을 들어.
+[명령] 글을 붙여넣으면 50자 넘는 긴 문장, 같은 단어 반복, &#x27;~것 같다&#x27; 같은 애매한 표현을 찾아 색으로 표시해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 문제 유형별 색 범례.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="present" data-q="데이터 표 정리기 엑셀 없이 간단한 표를 정리하고 계산하고 싶어. csv를 붙여넣으면 표로 보여주고, 열 머리를 누르면 정렬, 숫자 열은 합계·평균을 자동으로 계산해줘."><summary><span class="no">099</span><span class="ct">데이터 표 정리기</span><span class="cc">발표·글쓰기·데이터</span></summary><pre>[역할] 너는 대학생의 발표와 글쓰기, 데이터 정리를 돕는 도구 개발자야.
+[맥락] 엑셀 없이 간단한 표를 정리하고 계산하고 싶어.
+[명령] CSV를 붙여넣으면 표로 보여주고, 열 머리를 누르면 정렬, 숫자 열은 합계·평균을 자동으로 계산해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 고정 머리글, 합계 행.</pre><button type="button" class="copy">복사</button></details><details class="cp" data-cat="present" data-q="인포그래픽 카드 메이커 발표 자료에 숫자 하나를 크게 보여주는 카드가 필요해. 큰 숫자, 단위, 설명 문장, 출처를 입력하면 슬라이드에 붙여넣기 좋은 16:9 인포그래픽 카드를 만들어주고 색 테마를 3가지 중 고르게 해줘."><summary><span class="no">100</span><span class="ct">인포그래픽 카드 메이커</span><span class="cc">발표·글쓰기·데이터</span></summary><pre>[역할] 너는 대학생의 발표와 글쓰기, 데이터 정리를 돕는 도구 개발자야.
+[맥락] 발표 자료에 숫자 하나를 크게 보여주는 카드가 필요해.
+[명령] 큰 숫자, 단위, 설명 문장, 출처를 입력하면 슬라이드에 붙여넣기 좋은 16:9 인포그래픽 카드를 만들어주고 색 테마를 3가지 중 고르게 해줘.
+[형식] HTML 파일 하나로 된 웹앱, 한국어, 휴대폰 화면에서도 보기 좋게, 입력한 내용은 브라우저에 저장. 16:9 미리보기.</pre><button type="button" class="copy">복사</button></details></div>
+  <p class="note">만든 뒤에는 "버튼을 더 크게", "다크 모드 추가", "데이터를 CSV로 내보내기"처럼 한 문장씩 고쳐 달라고 하면 됩니다. 마음에 들면 [공유]로 링크를 만들어 보세요.</p>
+</section>
+
+<section id="rules">
+  <h2>지켜야 할 것</h2>
+  <p class="note">성적표, 주민등록번호, 소득 증빙 같은 개인정보는 올리지 마세요. 과제에 AI를 쓸 때는 수업의 AI 사용 규정을 먼저 확인하고, 쓴 사실을 밝히세요. 금액과 마감일은 반드시 공식 공고에서 다시 확인하세요.</p>
+</section>
+
+<footer class="site">
+  <div class="fgrid">
+    <div class="fcol">
+      <h4>이 페이지</h4>
+      <p><b>PNU AI 테크클래스_Gemini Notebook</b><br>Gemini와 Gemini Notebook 실습<br>대상: 학부생·대학원생 (비전공 포함)</p>
+      <p class="fsm">Part 1 Gemini(Gem·캔버스·Deep Research) → Part 2 Notebook(실습 5선)</p>
+    </div>
+    <div class="fcol">
+      <h4>바로 가기</h4>
+      <ul>
+        <li><a href="#today">학습 목표·개념</a></li>
+        <li><a href="#part2">Part 2 실습 5선</a></li>
+        <li><a href="#allfiles">실습 자료 한꺼번에 받기</a></li>
+        <li><a href="#canvas100">캔버스 100선</a></li>
+        <li><a href="#rules">지켜야 할 것</a></li>
+      </ul>
+    </div>
+    <div class="fcol">
+      <h4>도구 열기</h4>
+      <ul>
+        <li><a href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a></li>
+        <li><a href="https://notebook.google.com" target="_blank" rel="noopener">Gemini Notebook</a> · <a href="https://notebooklm.google.com" target="_blank" rel="noopener">안 열리면</a></li>
+        <li><a href="https://claude.ai/artifact/HTnHT3zBpsJRTgiUfEop6t" target="_blank" rel="noopener">멈춰 있는 단어 지도</a></li>
+      </ul>
+    </div>
+    <div class="fcol">
+      <h4>공식 확인처</h4>
+      <ul>
+        <li><a href="https://www.kosaf.go.kr" target="_blank" rel="noopener">한국장학재단</a></li>
+        <li><a href="https://www.youthcenter.go.kr" target="_blank" rel="noopener">온통청년</a></li>
+        <li><a href="https://young.busan.go.kr" target="_blank" rel="noopener">부산청년플랫폼</a></li>
+        <li><a href="https://www.myhome.go.kr" target="_blank" rel="noopener">마이홈포털</a></li>
+        <li><a href="https://www.pusan.ac.kr" target="_blank" rel="noopener">부산대학교</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="fnote">
+    <p><b>자료 출처</b> · 실습 논문: 「대학생의 AI 활용 특성과 인식 분석」, 한국문헌정보학회지 59(1), 671–692, <a href="https://doi.org/10.4275/KSLIS.2025.59.1.671" target="_blank" rel="noopener">DOI 10.4275/KSLIS.2025.59.1.671</a>, CC BY-NC-ND 4.0. 원문을 바꾸지 않고 수업용으로만 씁니다.</p>
+    <p><b>가상 자료 안내</b> · 강의자료, 장학 공고, 생활비, 성적, 채용 공고 등 나머지 실습 자료는 모두 수업용으로 만든 가상 자료이며 실제 기관·인물과 관계없습니다.</p>
+    <p><b>확인하고 쓰기</b> · 금액·마감일·자격은 반드시 공식 공고에서 다시 확인하세요. 개인정보는 올리지 말고, 과제에 AI를 쓰면 수업 규정에 따라 밝히세요. 기능 이름과 무료 한도는 Google 정책에 따라 바뀔 수 있습니다.</p>
+  </div>
+  <p class="fbot">© 2026 PNU AI 테크클래스_Gemini Notebook · 수업 실습용 페이지 · <a href="#top">맨 위로 ↑</a></p>
+</footer>
+</div>
+
+<a class="sidedl" href="#allfiles" aria-label="실습 자료 한꺼번에 받기"><span aria-hidden="true">↓</span>실습 자료 받기</a><a class="sidedl sk" href="#skilldl" aria-label="스킬 파일 받기"><span aria-hidden="true">↓</span>스킬 받기</a><script>
+(function(){
+  var q=document.getElementById('q100'), cat='all';
+  function filt(){var s=(q.value||'').trim().toLowerCase(),n=0;
+    document.querySelectorAll('details.cp').forEach(function(d){var ok=(cat==='all'||d.dataset.cat===cat)&&(!s||d.dataset.q.indexOf(s)>-1||d.querySelector('.ct').textContent.toLowerCase().indexOf(s)>-1);d.hidden=!ok;if(ok)n++});
+    document.getElementById('n100').textContent=n}
+  if(q){q.addEventListener('input',filt);
+    document.querySelector('.chips').addEventListener('click',function(ev){var b=ev.target.closest('.chip');if(!b)return;cat=b.dataset.cat;document.querySelectorAll('.chip').forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});filt()});}
+  document.addEventListener('click',function(ev){
+    var b=ev.target.closest('button.copy');if(!b||b.id==='reset')return;
+    var pre=b.parentElement.querySelector('pre');if(!pre)return;
+    var txt=pre.textContent, label=b.textContent;
+    function ok(){b.classList.add('done');b.textContent='복사됨';setTimeout(function(){b.classList.remove('done');b.textContent=label},1500)}
+    function fallback(){var r=document.createRange();r.selectNodeContents(pre);var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='선택됨, 복사하세요';setTimeout(function(){b.textContent=label},2000)}
+    try{navigator.clipboard.writeText(txt).then(ok,fallback)}catch(e){fallback()}
+  });
+})();
+</script>
+<script>
+(function(){
+  var dlp=null;
+  try{ if(window.claude&&window.claude.use){dlp=window.claude.use("downloads")} }catch(e){dlp=null}
+  if(!(window.claude&&window.claude.use)){dlp={save:function(o){return new Promise(function(res){var bl=o.data instanceof Blob?o.data:new Blob([o.data],{type:/\.csv$/i.test(o.filename)?"text/csv;charset=utf-8":"text/plain;charset=utf-8"});var u=URL.createObjectURL(bl),a=document.createElement("a");a.href=u;a.download=o.filename;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove()},1500);res()})}}}
+  function setMsg(btn,t){var m=btn.closest('.file').querySelector('.dlmsg');if(m)m.textContent=t}
+  document.addEventListener('click',function(ev){
+    var b=ev.target.closest('button.dlbtn');if(!b)return;
+    var pre=b.closest('.file').querySelector('pre');var data=pre.textContent;var fn=b.dataset.fn;
+    if(!dlp){try{if(window.claude&&window.claude.use)dlp=window.claude.use('downloads')}catch(e){}}
+    if(!dlp){setMsg(b,'이 화면에서는 내려받기가 안 됩니다. [내용 복사]로 복사해 [소스 추가] → [복사한 텍스트]에 붙여넣으세요.');return}
+    b.disabled=true;
+    Promise.resolve(dlp).then(function(dl){
+      if(!dl){setMsg(b,'이 화면에서는 내려받기가 안 됩니다. [내용 복사]를 쓰세요.');return}
+      if(/\.csv$/i.test(fn))data='\ufeff'+data;
+      return dl.save({filename:fn,data:data}).then(function(){setMsg(b,/^스킬/.test(fn)?'내려받았습니다. 파일을 열어 이름·설명·지침을 Gemini [맞춤설정] → [스킬]에 붙여넣으세요.':'내려받았습니다. Gemini Notebook에서 [소스 추가] → [파일 업로드]로 올리세요.')},function(err){
+        var c=err&&err.code;
+        if(c==='declined')setMsg(b,'내려받기를 취소했습니다.');
+        else if(c==='rate_limited')setMsg(b,'잠시 후 다시 눌러 주세요.');
+        else setMsg(b,'내려받기를 할 수 없습니다. [내용 복사]를 쓰세요.');
+      });
+    }).then(function(){b.disabled=false},function(){b.disabled=false});
+  });
+  var MAN=null,ZIPLIB=null;
+  function loadZip(){if(ZIPLIB)return ZIPLIB;ZIPLIB=new Promise(function(res,rej){var s=document.createElement('script');s.src='files/jszip.min.js';s.onload=function(){res(window.JSZip)};s.onerror=function(){ZIPLIB=null;rej(new Error('lib'))};document.head.appendChild(s)});return ZIPLIB}
+  function loadMan(){if(!MAN)MAN=fetch('files/manifest.json').then(function(r){if(!r.ok)throw new Error('man');return r.json()});return MAN}
+  function b64(t){var s=atob(t.trim()),a=new Uint8Array(s.length);for(var i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return a}
+  document.addEventListener('click',function(ev){
+    var b=ev.target.closest('button.zipbtn');if(!b)return;
+    var fn=b.dataset.fn, pack=b.dataset.pack;
+    if(!dlp){try{if(window.claude&&window.claude.use)dlp=window.claude.use('downloads')}catch(e){}}
+    if(!dlp){setMsg(b,'이 화면에서는 내려받기가 안 됩니다. 강사에게 파일을 받아 주세요.');return}
+    b.disabled=true;setMsg(b,'파일을 묶는 중입니다. 잠시만 기다려 주세요.');
+    Promise.all([loadZip(),loadMan()]).then(function(v){
+      var JSZip=v[0],M=v[1],list=pack==='ALL'?Object.keys(M).reduce(function(a,k){return a.concat(M[k])},[]):M[pack],zip=new JSZip();
+      return Promise.all(list.map(function(f){return fetch(f.u).then(function(r){if(!r.ok)throw new Error('f');return f.b?r.text().then(b64):r.arrayBuffer()}).then(function(d){zip.file(f.n,d)})})).then(function(){return zip.generateAsync({type:'blob'})});
+    }).then(function(blob){
+      return Promise.resolve(dlp).then(function(dl){
+        if(!dl){setMsg(b,'이 화면에서는 내려받기가 안 됩니다.');return}
+        return dl.save({filename:fn,data:blob}).then(function(){setMsg(b,/^스킬/.test(fn)?'내려받았습니다. 압축을 풀고 파일마다 이름·설명·지침을 Gemini [맞춤설정] → [스킬]에 붙여넣으세요.':'내려받았습니다. 압축을 풀고 Gemini Notebook에서 [소스 추가] → [파일 업로드]로 올리세요.')},function(err){
+          var c=err&&err.code;
+          if(c==='declined')setMsg(b,'내려받기를 취소했습니다.');
+          else if(c==='rate_limited')setMsg(b,'잠시 후 다시 눌러 주세요.');
+          else setMsg(b,'내려받기를 할 수 없습니다. 강사에게 파일을 받아 주세요.');
+        });
+      });
+    },function(){setMsg(b,'파일을 불러오지 못했습니다. 새로고침 후 다시 눌러 주세요.')}).then(function(){b.disabled=false},function(){b.disabled=false});
+  });
+})();
+</script>
+
+</body>
+</html>
