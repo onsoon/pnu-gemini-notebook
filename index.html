@@ -228,6 +228,43 @@ footer.site .fbot{margin-top:16px;font-size:12px}
 .file.skdl{border:0;padding:0;margin:0;background:none;box-shadow:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px}.file.skdl .fbtns{margin:0}.file.skdl .dlmsg{margin:0;font-size:12px}a.sidedl.sk{bottom:72px;background:var(--surface);color:var(--accent);border:2px solid var(--accent)}@media (min-width:1100px){a.sidedl{top:38%}a.sidedl.sk{top:68%;bottom:auto}}</style>
 
 <div class="wrap">
+<style>
+html.locked body>*:not(#gate){display:none!important}
+#gate{display:none}
+html.locked #gate{display:flex;min-height:100vh;min-height:100dvh;align-items:center;justify-content:center;padding:24px 16px;background:var(--bg,#f5f7fb);box-sizing:border-box}
+#gate .gcard{width:100%;max-width:440px;background:var(--surface,#fff);border:2px solid var(--accent,#0b4ea2);border-radius:16px;padding:32px 28px;box-sizing:border-box;font-family:'IBM Plex Sans KR','Noto Sans KR',sans-serif;color:var(--ink,#14213d)}
+#gate .geye{margin:0 0 6px;font-size:13px;font-weight:700;color:var(--accent,#0b4ea2);letter-spacing:.02em}
+#gate h1{margin:0 0 8px;font-size:24px;line-height:1.3}
+#gate .gdesc{margin:0 0 22px;font-size:15px;line-height:1.6;color:var(--muted,#5a6680)}
+#gate label{display:block;margin:0 0 8px;font-size:14px;font-weight:700;color:var(--accent,#0b4ea2)}
+#gate .grow{display:flex;gap:8px}
+#gate input{flex:1;min-width:0;font:inherit;font-size:18px;letter-spacing:.2em;padding:12px 14px;border:1px solid var(--line,#d9dfeb);border-radius:10px;background:#fff;color:var(--ink,#14213d)}
+#gate input:focus{outline:2px solid var(--accent,#0b4ea2);outline-offset:1px}
+#gate button{font:inherit;font-size:16px;font-weight:700;padding:12px 18px;border:0;border-radius:10px;background:var(--accent,#0b4ea2);color:#fff;cursor:pointer;white-space:nowrap}
+#gate .gmsg{min-height:22px;margin:10px 0 0;font-size:14px;color:#b42318}
+#gate .gfoot{margin:14px 0 0;font-size:12px;color:var(--muted,#5a6680)}
+</style>
+<div id="gate" role="dialog" aria-modal="true" aria-labelledby="gtitle"><form class="gcard" id="gform" autocomplete="off">
+<p class="geye">PNU AI 테크클래스_Gemini Notebook</p>
+<h1 id="gtitle">Gemini Notebook 실습실</h1>
+<p class="gdesc">강사가 알려 준 입장 코드를 입력하면 실습 내용이 열립니다.</p>
+<label for="gcode">입장 코드</label>
+<div class="grow"><input id="gcode" type="password" inputmode="numeric" maxlength="12" aria-describedby="gmsg" required><button type="submit">입장하기</button></div>
+<p class="gmsg" id="gmsg" aria-live="polite"></p>
+<p class="gfoot">2026. 11. 13.(금) · 과학기술연구동 401호</p>
+</form></div>
+<script>
+(function(){
+  var H='45eadc5e1f196c02b09c844a53bc23ea5efbf7f9f3339f91a666664440fef859',d=document.documentElement,gt=document.getElementById('gate');if(gt&&gt.parentNode!==document.body)document.body.insertBefore(gt,document.body.firstChild);d.classList.add('locked');
+  function hex(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return('0'+x.toString(16)).slice(-2)}).join('')}
+  function open(){d.classList.remove('locked');var g=document.getElementById('gate');if(g)g.remove();window.scrollTo(0,0)}
+  var f=document.getElementById('gform'),i=document.getElementById('gcode'),m=document.getElementById('gmsg');
+  setTimeout(function(){try{i.focus()}catch(e){}},50);
+  f.addEventListener('submit',function(e){e.preventDefault();var v=(i.value||'').trim();if(!v){m.textContent='입장 코드를 입력해 주세요.';return}
+    if(!(window.crypto&&crypto.subtle)){m.textContent='이 브라우저에서는 확인할 수 없습니다. 다른 브라우저로 열어 주세요.';return}
+    crypto.subtle.digest('SHA-256',new TextEncoder().encode(v)).then(function(b){if(hex(b)===H){open()}else{m.textContent='입장 코드가 맞지 않습니다. 강사에게 다시 확인해 주세요.';i.select()}})});
+})();
+</script>
 <header class="top" id="top">
   <span class="eyebrow">PNU AI 테크클래스_Gemini Notebook · 2026.11.13(금) 15:00–17:00 · 과학기술연구동 401호</span>
   <h1><em>Gemini</em>와 Gemini Notebook 실습실</h1>
